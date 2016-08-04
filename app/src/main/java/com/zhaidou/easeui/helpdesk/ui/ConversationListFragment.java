@@ -56,6 +56,7 @@ public class ConversationListFragment extends EaseConversationListFragment imple
 //                    Intent intent=new Intent(getActivity(), CommentContainerFragment.class);
 //                    startActivity(intent);
                     SharedPreferencesUtil.saveData(getActivity(),"UnReadComment",0);
+                    CountManager.getInstance().notifyCommentChange();
                     CommentContainerFragment commentContainerFragment=new CommentContainerFragment();
                     ((com.zhaidou.base.BaseActivity)getActivity()).navigationToFragment(commentContainerFragment);
                 }else {

@@ -28,6 +28,13 @@
             android:paddingBottom="7dp"
             android:paddingTop="7dp"
             >
+
+            <!--<android.support.v7.widget.RecyclerView-->
+                <!--android:id="@+id/recyclerView"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--></android.support.v7.widget.RecyclerView>-->
+
             <LinearLayout
                 android:id="@+id/fallLine1"
                 android:layout_width="match_parent"
@@ -45,15 +52,6 @@
                 android:orientation="vertical"></LinearLayout>
 
             </LinearLayout>
-            <!--<com.zhaidou.view.flow.StaggeredGridView-->
-                <!--android:id="@+id/grid"-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="match_parent"-->
-                <!--app:column_count_landscape="2"-->
-                <!--android:visibility="gone"-->
-                <!--app:item_margin="10dp"-->
-                <!--></com.zhaidou.view.flow.StaggeredGridView>-->
-
 
     </com.pulltorefresh.PullToRefreshScrollView>
 

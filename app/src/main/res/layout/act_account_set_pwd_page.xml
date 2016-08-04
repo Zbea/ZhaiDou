@@ -38,7 +38,7 @@
                 android:background="@drawable/icon_edit_bg"
                 android:textSize="13sp"
                 android:singleLine="true"
-                android:drawableRight="@drawable/cancel"
+                android:drawableRight="@drawable/icon_cancel"
                 android:paddingRight="10dp"
                 android:drawablePadding="10dp"
                 android:layout_marginLeft="10dp"

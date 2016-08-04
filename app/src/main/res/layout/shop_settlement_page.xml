@@ -60,9 +60,10 @@
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
                             android:orientation="horizontal">
 
-                            <com.zhaidou.view.TypeFaceTextView
+                            <TextView
                                 android:id="@+id/jsAddressNameTv"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
@@ -74,37 +75,41 @@
                                 android:ellipsize="end"
                                 android:marqueeRepeatLimit="marquee_forever"/>
 
-                            <com.zhaidou.view.TypeFaceTextView
+                            <TextView
                                 android:id="@+id/jsAddressPhoneTv"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:textColor="@color/text_normal_color"
                                 android:layout_marginLeft="15dp"
+                                android:layout_marginRight="15dp"
                                 android:textSize="14sp"
                                 android:text="电话："
-                                android:singleLine="true"
-                                android:ellipsize="end"
-                                android:marqueeRepeatLimit="marquee_forever"/>
+                                android:singleLine="true" />
+
+                            <com.zhaidou.view.TypeFaceTextView
+                                android:id="@+id/jsAddressDefaultTv"
+                                android:layout_width="wrap_content"
+                                android:layout_height="18dp"
+                                android:background="@drawable/btn_red_click_selector"
+                                android:text="默认"
+                                android:gravity="center"
+                                android:textColor="@color/white"
+                                android:textSize="12sp"
+                                android:paddingLeft="8dp"
+                                android:paddingRight="8dp"
+                                android:layout_marginRight="15dp"
+                                />
                         </LinearLayout>
 
                         <LinearLayout
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content">
-
-                            <com.zhaidou.view.TypeFaceTextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="13dp"
-                                android:textSize="13sp"
-                                android:textColor="@color/text_normal_color"
-                                android:text="地址:"/>
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp">
 
                             <com.zhaidou.view.TypeFaceTextView
                                 android:id="@+id/jsAddressinfoTv"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="13dp"
-                                android:layout_marginLeft="5dp"
                                 android:textSize="13sp"
                                 android:textColor="@color/text_normal_color"
                                 android:text=""/>
@@ -506,7 +511,7 @@
                     android:textSize="14sp"
                     android:singleLine="true"
                     android:layout_margin="@dimen/default_margin"
-                    android:drawableRight="@drawable/cancel"
+                    android:drawableRight="@drawable/icon_cancel"
                     android:drawablePadding="10dp"
                     android:paddingTop="2dp"
                     android:paddingBottom="2dp"
@@ -540,7 +545,7 @@
                         android:gravity="center_vertical"
                         android:textSize="14sp"
                         android:singleLine="true"
-                        android:drawableRight="@drawable/cancel"
+                        android:drawableRight="@drawable/icon_cancel"
                         android:paddingRight="@dimen/default_margin"
                         android:drawablePadding="10dp"
                         android:inputType="number"

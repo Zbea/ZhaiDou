@@ -23,7 +23,7 @@
                 android:id="@id/imageView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/icon_comment_null" />
+                android:src="@drawable/icon_null_comment" />
 
             <com.zhaidou.view.TypeFaceTextView
                 android:paddingTop="20dp"

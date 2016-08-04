@@ -1,6 +1,7 @@
 package com.zhaidou.base;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -13,7 +14,7 @@ import android.widget.ImageButton;
 
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
-import com.zhaidou.fragments.MainCategoryFragment;
+import com.zhaidou.fragments.MainGoodsFragment;
 import com.zhaidou.fragments.MainHomeFragment;
 import com.zhaidou.fragments.MainMagicFragment;
 import com.zhaidou.fragments.MainPersonalFragment;
@@ -68,8 +69,6 @@ public class BaseActivity extends FragmentActivity implements RegisterFragment.R
                 .addToBackStack(null).commitAllowingStateLoss();
     }
     public void popToStack(Fragment fragment) {
-
-        
         FragmentManager fragmentManager = getSupportFragmentManager();
         //.setCustomAnimations(R.anim.page_out_into_the,R.anim.page_out_out_the)
         fragmentManager.beginTransaction().remove(fragment).commitAllowingStateLoss();
@@ -127,9 +126,46 @@ public class BaseActivity extends FragmentActivity implements RegisterFragment.R
     public void allfragment() {
         List<Fragment> fragments = getSupportFragmentManager().getFragments();
         for (Fragment fragment : fragments) {
-            if (fragment instanceof MainHomeFragment || fragment instanceof MainPersonalFragment || fragment instanceof MainMagicFragment || fragment instanceof MainCategoryFragment || fragment instanceof ShopCartFragment) {
+            if (fragment instanceof MainHomeFragment|| fragment instanceof MainGoodsFragment || fragment instanceof MainPersonalFragment || fragment instanceof MainMagicFragment  || fragment instanceof ShopCartFragment) {
             } else {
                 popToStack(fragment);
+            }
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode,resultCode,data);
+        FragmentManager fm = getSupportFragmentManager();
+        List<Fragment> fragments=fm.getFragments();
+        if (fragments!=null)
+        {
+            for(Fragment frag:fragments)
+            {
+                if (frag!=null)
+                {
+                    frag.onActivityResult(requestCode, resultCode, data);
+                }
+            }
+        }
+    }
+
+    /**
+     * 递归调用，对所有子Fragement生效
+     *
+     * @param frag
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
+    private void handleResult(Fragment frag, int requestCode, int resultCode,
+                              Intent data) {
+        frag.onActivityResult(requestCode & 0xffff, resultCode, data);
+        List<Fragment> frags = frag.getChildFragmentManager().getFragments();
+        if (frags != null) {
+            for (Fragment f : frags) {
+                if (f != null)
+                    handleResult(f, requestCode, resultCode, data);
             }
         }
     }

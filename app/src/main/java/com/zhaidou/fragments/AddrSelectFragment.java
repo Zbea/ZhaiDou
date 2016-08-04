@@ -20,10 +20,9 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.R;
+import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
@@ -31,6 +30,8 @@ import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.ViewHolder;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Address;
+import com.zhaidou.model.ZhaiDouRequest;
+import com.zhaidou.utils.DialogUtils;
 import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.TypeFaceTextView;
 
@@ -199,7 +200,7 @@ public class AddrSelectFragment extends BaseFragment implements View.OnClickList
                 });
             }
         });
-        mRequestQueue = Volley.newRequestQueue(getActivity());
+        mRequestQueue = ZDApplication.newRequestQueue();
         mSharedPreferences = getActivity().getSharedPreferences("zhaidou", Context.MODE_PRIVATE);
         token = mSharedPreferences.getString("token", null);
         FetchData();
@@ -263,30 +264,15 @@ public class AddrSelectFragment extends BaseFragment implements View.OnClickList
      */
     private void addrDelete(final Address address)
     {
-        final Dialog dialog = new Dialog(getActivity(), R.style.custom_dialog);
-
-        View dialogView = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_custom_collect_hint, null);
-        TextView textView = (TextView) dialogView.findViewById(R.id.tv_msg);
-        textView.setText("是否确认删除地址?");
-        TextView cancelTv = (TextView) dialogView.findViewById(R.id.cancelTv);
-        cancelTv.setOnClickListener(new View.OnClickListener()
+        DialogUtils dialogUtils=new DialogUtils(mContext);
+        dialogUtils.showDialog("是否确认删除地址?",new DialogUtils.PositiveListener()
         {
             @Override
-            public void onClick(View view)
-            {
-                dialog.dismiss();
-            }
-        });
-
-        TextView okTv = (TextView) dialogView.findViewById(R.id.okTv);
-        okTv.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View view)
+            public void onPositive()
             {
                 mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "删除中");
                 String url = ZhaiDou.AddressDeleteUrl +"?id="+ address.getId();
-                JsonObjectRequest request = new JsonObjectRequest(Request.Method.DELETE, url, new Response.Listener<JSONObject>()
+                ZhaiDouRequest request = new ZhaiDouRequest(Request.Method.DELETE, url, new Response.Listener<JSONObject>()
                 {
                     @Override
                     public void onResponse(JSONObject jsonObject)
@@ -312,12 +298,12 @@ public class AddrSelectFragment extends BaseFragment implements View.OnClickList
                                 if (addressList.size() == 0)
                                 {
                                     if(addressListener!=null)
-                                    addressListener.onDeleteFinishAddress();
+                                        addressListener.onDeleteFinishAddress();
                                 }
                             }else {
 
-                            String message = jsonObject.optString("message");
-                            ShowToast(message);
+                                String message = jsonObject.optString("message");
+                                ShowToast(message);
                             }
                         }
                     }
@@ -330,25 +316,10 @@ public class AddrSelectFragment extends BaseFragment implements View.OnClickList
                             mDialog.dismiss();
                         ToolUtils.setToast(mContext,"抱歉，删除失败");
                     }
-                })
-                {
-                    @Override
-                    public Map<String, String> getHeaders() throws AuthFailureError
-                    {
-                        Map<String, String> headers = new HashMap<String, String>();
-                        headers.put("SECAuthorization", token);
-                        headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                        return headers;
-                    }
-                };
+                });
                 mRequestQueue.add(request);
-                dialog.dismiss();
             }
-        });
-        dialog.setCanceledOnTouchOutside(true);
-        dialog.setCancelable(true);
-        dialog.addContentView(dialogView, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        dialog.show();
+        },null);
     }
 
     public void setAddressListener(AddressListener addressListener)
@@ -365,7 +336,7 @@ public class AddrSelectFragment extends BaseFragment implements View.OnClickList
 
     private void FetchData()
     {
-        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.AddressListUrl, new Response.Listener<JSONObject>()
+        ZhaiDouRequest request = new ZhaiDouRequest(mContext,ZhaiDou.AddressListUrl, new Response.Listener<JSONObject>()
         {
             @Override
             public void onResponse(JSONObject jsonObject)
@@ -468,14 +439,14 @@ public class AddrSelectFragment extends BaseFragment implements View.OnClickList
             }
 
             Address address = getList().get(position);
-            tv_name.setText("收件人：" + address.getName());
-            tv_mobile.setText("电话：" + address.getPhone());
+            tv_name.setText(address.getName());
+            tv_mobile.setText(address.getPhone());
             if (address.getProvince() == null)
             {
-                tv_addr.setText("地址：" + address.getAddress());
+                tv_addr.setText(address.getAddress());
             } else
             {
-                tv_addr.setText("地址：" + address.getProvince() + address.getCity() + address.getArea() + address.getAddress());
+                tv_addr.setText(address.getProvince() + address.getCity() + address.getArea() + address.getAddress());
             }
             if (address.isIs_default())
             {

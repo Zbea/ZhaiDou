@@ -50,7 +50,7 @@ public class CartGoodsItem implements Serializable
     //是否过期
     public String isDate;
     //生成时间
-    public long creatTime;
+    public int createTime;
 
     public CartGoodsItem()
     {

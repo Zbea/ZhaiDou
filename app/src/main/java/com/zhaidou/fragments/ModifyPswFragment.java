@@ -9,19 +9,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.R;
 import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
+import com.zhaidou.model.ZhaiDouRequest;
 import com.zhaidou.utils.DialogUtils;
-import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.view.TypeFaceTextView;
 
 import org.json.JSONObject;
@@ -73,12 +71,11 @@ public class ModifyPswFragment extends BaseFragment {
 
     private void doModifyTask(String mCurrentText, String mNewText, String confirmText) {
         final Dialog dialog = mDialogUtils.showLoadingDialog();
-        final String token = (String) SharedPreferencesUtil.getData(getActivity(), "token", "");
         Map<String, String> params = new HashMap<String, String>();
         params.put("current_password", mCurrentText);
         params.put("password", mNewText);
         params.put("password_confirmation", confirmText);
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.USER_PSW_CHANGE_URL, new JSONObject(params), new Response.Listener<JSONObject>() {
+        ZhaiDouRequest request = new ZhaiDouRequest(Request.Method.POST, ZhaiDou.USER_PSW_CHANGE_URL,params, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 if (dialog != null)
@@ -103,15 +100,8 @@ public class ModifyPswFragment extends BaseFragment {
             public void onErrorResponse(VolleyError volleyError) {
                 ShowToast("网络出现异常");
             }
-        }) {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("SECAuthorization", token);
-                return headers;
-            }
-        };
-        ((ZDApplication) (getActivity().getApplication())).mRequestQueue.add(request);
+        });
+        ZDApplication.newRequestQueue().add(request);
     }
 
     private void verifyInputMsg(String mCurrentText, String mNewText, String mConfirmText) {

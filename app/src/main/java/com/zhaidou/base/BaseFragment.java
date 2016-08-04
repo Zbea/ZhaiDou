@@ -55,7 +55,6 @@ public abstract class BaseFragment extends Fragment implements View.OnTouchListe
     protected int screenWidth;
     protected int screenHeight;
     public Context mContext;
-    protected boolean isDialogFirstVisible = true;
 
     public String versionCode;
     public String versionName;
@@ -66,9 +65,8 @@ public abstract class BaseFragment extends Fragment implements View.OnTouchListe
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        setRetainInstance(true);
         mInflater = LayoutInflater.from(getActivity());
-        mEmptyView = mInflater.inflate(R.layout.list_empty_view, null);
+        mEmptyView = mInflater.inflate(R.layout.custom_list_empty_view, null);
         mContext = getActivity();
         DisplayMetrics dm = new DisplayMetrics();
         getActivity().getWindowManager().getDefaultDisplay().getMetrics(dm);
@@ -119,8 +117,8 @@ public abstract class BaseFragment extends Fragment implements View.OnTouchListe
 
     public void ShowToast(String text) {
         if (mToast == null) {
-            if (getActivity() != null) {
-                mToast = Toast.makeText(getActivity(), text, Toast.LENGTH_SHORT);
+            if (mContext!= null) {
+                mToast = Toast.makeText(mContext, text, Toast.LENGTH_SHORT);
             }
         } else {
             mToast.setText(text);
@@ -131,11 +129,14 @@ public abstract class BaseFragment extends Fragment implements View.OnTouchListe
 
     public void ShowToast(int text) {
         if (mToast == null) {
-            mToast = Toast.makeText(getActivity(), text, Toast.LENGTH_LONG);
+            if (mContext!= null) {
+                mToast = Toast.makeText(mContext, text, Toast.LENGTH_SHORT);
+            }
         } else {
             mToast.setText(text);
         }
-        mToast.show();
+        if (mToast != null)
+            mToast.show();
     }
 
     /**
@@ -231,5 +232,7 @@ public abstract class BaseFragment extends Fragment implements View.OnTouchListe
     public void onResume() {
         super.onResume();
     }
+
+    public void refresh(){};
 
 }

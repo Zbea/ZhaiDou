@@ -53,7 +53,7 @@
         android:layout_alignParentTop="true"
         android:gravity="center_vertical"
         android:layout_marginRight="10dp"
-        android:background="@drawable/views2"
+        android:background="@drawable/icon_views_bg"
         android:layout_marginTop="10dp"
         android:id="@+id/relativeLayout">
 
@@ -82,7 +82,7 @@
         android:layout_height="@dimen/home_tips_dimen"
         android:id="@+id/newsView"
         android:visibility="gone"
-        android:src="@drawable/home_info_news_icon"/>
+        android:src="@drawable/icon_good_news_icon"/>
     </RelativeLayout>
 
 </LinearLayout>

@@ -98,7 +98,7 @@ public class ShopPaymentSuccessFragment extends BaseFragment {
                 case R.id.tv_mall:
                     ToolUtils.setLog("前往商城");
                     colseFragment(ShopPaymentSuccessFragment.this);
-                    ((BaseActivity) mContext).allfragment();
+                    ((MainActivity) mContext).allfragment();
                     if (mContext instanceof MainActivity){
                         ((MainActivity) mContext).toHomeFragment();
                     }else {
@@ -107,9 +107,9 @@ public class ShopPaymentSuccessFragment extends BaseFragment {
                     break;
                 case R.id.tv_order_detail:
                     ToolUtils.setLog("前往订单");
-                    OrderDetailFragment1 orderDetailFragment1=OrderDetailFragment1.newInstance(mOrderCode,1);
-                    ((BaseActivity)getActivity()).navigationToFragment(orderDetailFragment1);
-                    orderDetailFragment1.setOnColseSuccess(new OrderDetailFragment1.OnColseSuccess()
+                    OrderDetailFragment orderDetailFragment = OrderDetailFragment.newInstance(mOrderCode, 1);
+                    ((BaseActivity)getActivity()).navigationToFragment(orderDetailFragment);
+                    orderDetailFragment.setOnColseSuccess(new OrderDetailFragment.OnColseSuccess()
                     {
                         @Override
                         public void colsePage()

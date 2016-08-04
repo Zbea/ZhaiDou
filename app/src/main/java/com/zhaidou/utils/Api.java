@@ -1,4 +1,5 @@
 package com.zhaidou.utils;
+import android.content.Context;
 import android.text.TextUtils;
 import android.widget.Toast;
 
@@ -43,39 +44,214 @@ import java.util.UUID;
  */
 public class Api {
 
+
+    /**
+     * banner点击统计
+     * @param mContext
+     * @param name
+     * @param url
+     * @param bannerType
+     * @param bannerIndex
+     * @param successListener
+     * @param errorListener
+     */
+    public static void getBannerClick(Context mContext,String name,String url,int bannerType,int bannerIndex,final SuccessListener successListener, final ErrorListener errorListener) {
+        int userId = (Integer) SharedPreferencesUtil.getData(mContext, "userId", -1);
+        String token = (String) SharedPreferencesUtil.getData(mContext, "token", "");
+        String surl;
+        if (!TextUtils.isEmpty(token))
+        {
+            surl=ZhaiDou.HomeClickStatisticalUrl+name+"&url="+url+"&userId="+userId+"&sourceCode=3&bannerType="+bannerType+"&bannerIndex="+bannerIndex;
+        }
+        else
+        {
+            surl=ZhaiDou.HomeClickStatisticalUrl+name+"&url="+url+"&sourceCode=3&bannerType="+bannerType+"&bannerIndex="+bannerIndex;
+        }
+        ZhaiDouRequest request = new ZhaiDouRequest(surl, new Response.Listener<JSONObject>()
+        {
+            @Override
+            public void onResponse(JSONObject response)
+            {
+                if (response != null)
+                {
+                    ToolUtils.setLog(response.toString());
+                }
+            }
+        }, null);
+        ZDApplication.newRequestQueue().add(request);
+    }
+
+    /**
+     * 获取省市区
+     * @param successListener
+     * @param errorListener
+     */
+    public static void getAddressCity(final SuccessListener successListener, final ErrorListener errorListener) {
+        ZhaiDouRequest request = new ZhaiDouRequest(Request.Method.GET, ZhaiDou.ORDER_ADDRESS_URL, new Response.Listener<JSONObject>()
+        {
+            @Override
+            public void onResponse(JSONObject jsonObject) {
+                if (successListener != null)
+                    successListener.onSuccess(jsonObject);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                if (errorListener != null)
+                    errorListener.onError(volleyError);
+            }
+        });
+        ZDApplication.newRequestQueue().add(request);
+    }
+
+
+    /**
+     * 零元特卖购买请求
+     * @param userId
+     * @param successListener
+     * @param errorListener
+     */
+    public static void getIsBuyOSale(int userId,final SuccessListener successListener, final ErrorListener errorListener) {
+        ZhaiDouRequest request = new ZhaiDouRequest(Request.Method.GET, ZhaiDou.IsBuyOSaleUrl + userId, new Response.Listener<JSONObject>()
+        {
+            @Override
+            public void onResponse(JSONObject jsonObject) {
+                if (successListener != null)
+                    successListener.onSuccess(jsonObject);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                if (errorListener != null)
+                    errorListener.onError(volleyError);
+            }
+        });
+        ZDApplication.mRequestQueue.add(request);
+    }
+
+    /**
+     * 自动更新管理
+     * @param successListener
+     * @param errorListener
+     */
+    public static void getApkManage(final SuccessListener successListener, final ErrorListener errorListener) {
+        ZhaiDouRequest request = new ZhaiDouRequest(Request.Method.GET, ZhaiDou.ApkUrl, new Response.Listener<JSONObject>()
+        {
+            @Override
+            public void onResponse(JSONObject jsonObject) {
+                if (successListener != null)
+                    successListener.onSuccess(jsonObject);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                if (errorListener != null)
+                    errorListener.onError(volleyError);
+            }
+        });
+        ZDApplication.mRequestQueue.add(request);
+    }
+
+    /**
+     * 查看购物车数量
+     * @param userId
+     * @param successListener
+     * @param errorListener
+     */
+    public static void getCartCount(int userId,final SuccessListener successListener, final ErrorListener errorListener) {
+        ZhaiDouRequest request = new ZhaiDouRequest(Request.Method.GET, ZhaiDou.CartGoodsCountUrl + userId, new Response.Listener<JSONObject>()
+        {
+            @Override
+            public void onResponse(JSONObject jsonObject) {
+                if (successListener != null)
+                    successListener.onSuccess(jsonObject);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                if (errorListener != null)
+                    errorListener.onError(volleyError);
+            }
+        });
+        ZDApplication.mRequestQueue.add(request);
+    }
+
+
+    public static void getUserInfo(int userId,final SuccessListener successListener, final ErrorListener errorListener) {
+        ZhaiDouRequest request = new ZhaiDouRequest(ZhaiDou.USER_SIMPLE_PROFILE_URL + "?id=" + userId, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject jsonObject) {
+                if (successListener != null)
+                    successListener.onSuccess(jsonObject);
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                if (errorListener != null)
+                    errorListener.onError(volleyError);
+            }
+        });
+        ZDApplication.newRequestQueue().add(request);
+    }
+
+    public static void getUserDetail(int userId,final SuccessListener successListener, final ErrorListener errorListener) {
+        ZhaiDouRequest request = new ZhaiDouRequest(ZhaiDou.USER_DETAIL_PROFILE_URL + "?id=" + userId, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject jsonObject) {
+                if (successListener != null)
+                    successListener.onSuccess(jsonObject);
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                if (errorListener != null)
+                    errorListener.onError(volleyError);
+            }
+        });
+        ZDApplication.newRequestQueue().add(request);
+    }
+
     public static String comment(Map<String, Object> params, SuccessListener successListener, ErrorListener errorListener) {
-        System.out.println("params = [" + params + "], successListener = [" + successListener + "], errorListener = [" + errorListener + "]");
         String userId = params.get("commentUserId").toString();
         String userName = params.get("commentUserName").toString();
         String content = params.get("content").toString();
         String articleId = params.get("articleId").toString();
         String articleTitle = params.get("articleTitle").toString();
-        System.out.println("articleTitle = " + articleTitle);
         String commentType = params.get("commentType").toString();
         String commentId = params.get("commentId").toString();
         List<String> images = (List<String>) params.get("images");
         String BOUNDARY = UUID.randomUUID().toString();
         String result = null;
         BufferedReader in = null;
-        try {
+        try
+        {
             MultipartEntity multipartEntity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE, BOUNDARY, Charset.defaultCharset());
             multipartEntity.addPart("commentUserId", new StringBody(userId + ""));
             multipartEntity.addPart("commentUserName", new StringBody(userName, Charset.defaultCharset()));
             multipartEntity.addPart("content", new StringBody(content, Charset.defaultCharset()));
             multipartEntity.addPart("articleId", new StringBody(articleId + ""));
-            multipartEntity.addPart("articleTitle", new StringBody(articleTitle + "",Charset.defaultCharset()));
+            multipartEntity.addPart("articleTitle", new StringBody(articleTitle + "", Charset.defaultCharset()));
             multipartEntity.addPart("commentType", new StringBody(commentType));
-            multipartEntity.addPart("commentId", new StringBody(commentId));
-            for (int i = 0; images != null && i < images.size(); i++) {
+        if (commentId!=null)
+        {
+            multipartEntity.addPart("commentId", new StringBody(commentId+""));
+        }
+
+            for (int i = 0; images != null && i < images.size(); i++)
+            {
                 String image = images.get(i);
-                if (!TextUtils.isEmpty(image)) {
-                    FileBody fileBody = new FileBody(new File(images.get(i)));
+                if (!TextUtils.isEmpty(image))
+                {
+                    FileBody fileBody = new FileBody(new File(image));
                     multipartEntity.addPart("files", fileBody);
                 }
             }
 
             HttpPost request = new HttpPost(ZhaiDou.CommentAddUrl);
             request.addHeader("ZhaidouVesion", ZDApplication.getInstance().getResources().getString(R.string.app_versionName));
+            request.addHeader("zd-client", "ANDROID");
             request.addHeader("Content-Type", "multipart/form-data; boundary=" + BOUNDARY);
             request.addHeader("Accept", "application/json");
             request.setEntity(multipartEntity);
@@ -86,14 +262,20 @@ public class Api {
             StringBuffer sb = new StringBuffer("");
             String line = "";
             String NL = System.getProperty("line.separator");
-            while ((line = in.readLine()) != null) {
+            while ((line = in.readLine()) != null)
+            {
                 sb.append(line + NL);
             }
             in.close();
             result = sb.toString();
-            System.out.println("result = " + result);
-            JSONObject jsonObject = new JSONObject(result);
-            successListener.onSuccess(jsonObject);
+            if (request != null)
+            {
+                JSONObject jsonObject = new JSONObject(result);
+                successListener.onSuccess(jsonObject);
+            } else
+        {
+            errorListener.onError("加载失败");
+        }
             return result;
 
         } catch (Exception e) {

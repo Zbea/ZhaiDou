@@ -16,9 +16,11 @@ public class ZhaiDou {
 
     //在线设计
     public static String ONLINE_DESIGN_URL=HOME_BASE_WAP_URL+"design.html?source=android";
-
+    //注册协议
+    public static String REGISTER_PROTOCOL=HOME_BASE_WAP_URL+"terms";
     //软装指南
-    public static String MagicGuideUrl=HOME_BASE_WAP_URL+"rzzh/list.html";
+    public static String MagicGuideUrl=HOME_BASE_WAP_URL+"decorate/guide?source=android";//rzzh/list.html
+
     //美丽家
     public static String HomeBeautifulUrl=HOME_BASE_URL+"zd/getPosts.action?plug=006&pageSize=10&pageNo=";
     //分类
@@ -85,6 +87,8 @@ public class ZhaiDou {
     public static String SearchGoodsKeyWordUrl=HOME_BASE_URL+"product/searchProduct.action?businessType=01&searchType=10&pageSize=10&keyword=";
     //搜索商品接口Id
     public static String SearchGoodsIdUrl=HOME_BASE_URL+"product/searchProduct.action?businessType=01&searchType=20&pageSize=10&expandedRequest=";
+    //搜索商品接口品牌Id
+    public static String SearchGoodsBrandIdUrl=HOME_BASE_URL+"product/searchProduct.action?businessType=01&searchType=30&pageSize=10&expandedRequest=";
     //热搜词
     public static String SearchHotUrl=HOME_BASE_URL+"product/getHotKeywordList.action";
     //提交订单接口
@@ -212,6 +216,10 @@ public class ZhaiDou {
      * 评论图片目录
      */
     public static String MyCommentDir = "/sdcard/zhaidou/comment/";
+    /**
+     * 我的退货保存目录
+     */
+    public static String MyReturnDir = "/sdcard/zhaidou/return/";
 
     public enum ListType {
         HOME,
@@ -301,14 +309,6 @@ public class ZhaiDou {
 
 
     //广播标识集合
-    /**
-     *  购物车选中商品刷新
-     */
-    public static String IntentRefreshCartGoodsCheckTag ="com.zhaidou.home.refesh.cart.goods.check";
-    /**
-     *  加入购物车成功
-     */
-    public static String IntentRefreshAddCartTag="com.zhaidou.home.refesh.goods.add.cart";
     /**
      * 购物车商品支付成功
      */

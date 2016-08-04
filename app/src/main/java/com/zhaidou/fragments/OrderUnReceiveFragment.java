@@ -272,15 +272,14 @@ public class OrderUnReceiveFragment extends BaseFragment implements View.OnClick
             @Override
             public void OnClickListener(View parentV, View v, Integer position, Object values) {
                 Order1 order =(Order1)values;
-                OrderDetailFragment1 orderDetailFragment = OrderDetailFragment1.newInstance(order.orderCode , 2);
+                OrderDetailFragment orderDetailFragment = OrderDetailFragment.newInstance(order.orderCode, 2);
                 ((BaseActivity) getActivity()).navigationToFragment(orderDetailFragment);
             }
         });
     }
 
     private void initData() {
-        mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading",isDialogFirstVisible);
-        isDialogFirstVisible=false;
+        mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading");
         if (NetworkUtils.isNetworkAvailable(mContext)) {
             mNetErrorView.setVisibility(View.GONE);
             loadingView.setVisibility(View.GONE);

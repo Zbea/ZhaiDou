@@ -60,7 +60,6 @@ public class ChatActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                System.out.println("inputMethodManager.isActive() = " + inputMethodManager.isActive());
                 if (inputMethodManager.isActive())
                     inputMethodManager.hideSoftInputFromWindow(getWindow().peekDecorView().getApplicationWindowToken(), 0);
                 finish();
@@ -74,11 +73,11 @@ public class ChatActivity extends BaseActivity {
                 if (username.equalsIgnoreCase(EMChatManager.getInstance().getCurrentUser())) {
                     easeUser.setAvatar((String) SharedPreferencesUtil.getData(ChatActivity.this, "avatar", ""));
                 } else if ("service".equalsIgnoreCase(username)) {
-                    easeUser.setAvatar(R.drawable.icon_servicer + "");
+                    easeUser.setAvatar(R.drawable.icon_ease_servicer + "");
                 } else if ("designer".equalsIgnoreCase(username)) {
-                    easeUser.setAvatar(R.drawable.icon_designer + "");
+                    easeUser.setAvatar(R.drawable.icon_ease_designer + "");
                 }else if ("comment".equalsIgnoreCase(username)){
-                    easeUser.setAvatar(R.drawable.icon_comment+"");
+                    easeUser.setAvatar(R.drawable.icon_ease_comment +"");
                 }
                 return easeUser;
             }

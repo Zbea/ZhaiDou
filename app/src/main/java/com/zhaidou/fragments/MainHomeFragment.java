@@ -20,12 +20,9 @@ import android.widget.ListView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
 import com.easemob.chat.EMChatManager;
 import com.pulltorefresh.PullToRefreshBase;
 import com.pulltorefresh.PullToRefreshScrollView;
@@ -34,15 +31,16 @@ import com.zhaidou.R;
 import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.LoginActivity;
+import com.zhaidou.adapter.HomeArticleAdapter;
 import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.base.CountManager;
-import com.zhaidou.base.ViewHolder;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.easeui.helpdesk.ui.ConversationListFragment;
 import com.zhaidou.model.Article;
 import com.zhaidou.model.SwitchImage;
+import com.zhaidou.model.ZhaiDouRequest;
 import com.zhaidou.utils.Api;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.PixelUtil;
@@ -50,19 +48,14 @@ import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.CustomBannerView;
 import com.zhaidou.view.ListViewForScrollView;
-import com.zhaidou.view.TypeFaceTextView;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.WeakHashMap;
 
-public class MainHomeFragment extends BaseFragment implements
-        AdapterView.OnItemClickListener, View.OnClickListener,
+public class MainHomeFragment extends BaseFragment implements View.OnClickListener,
         PullToRefreshBase.OnRefreshListener2<ScrollView>,CountManager.onCommentChangeListener
 
 {
@@ -84,7 +77,7 @@ public class MainHomeFragment extends BaseFragment implements
     private Context mContext;
 
     private HorizontalScrollView horizontalScrollView;
-    private ArticleAdapter adapterList;
+    private HomeArticleAdapter adapterList;
     private RequestQueue mRequestQueue;
     private List<SwitchImage> banners = new ArrayList<SwitchImage>();
     private List<SwitchImage> codes = new ArrayList<SwitchImage>();
@@ -95,7 +88,6 @@ public class MainHomeFragment extends BaseFragment implements
     private CustomBannerView customBannerView;
     private LinearLayout linearLayout, codeView,goodsView;
     private PullToRefreshScrollView mScrollView;
-    private WeakHashMap<Integer, View> mHashMap = new WeakHashMap<Integer, View>();
     private long formerTime;
 
     private Handler handler = new Handler()
@@ -303,9 +295,37 @@ public class MainHomeFragment extends BaseFragment implements
         reloadNetBtn.setOnClickListener(this);
 
         listView = (ListViewForScrollView) view.findViewById(R.id.homeItemList);
-        listView.setOnItemClickListener(this);
-        adapterList = new ArticleAdapter(mContext, articles);
+        adapterList = new HomeArticleAdapter(mContext, articles,1);
         listView.setAdapter(adapterList);
+        adapterList.setOnInViewClickListener(R.id.title,new BaseListAdapter.onInternalClickListener()
+        {
+            @Override
+            public void OnClickListener(View parentV, View v, Integer position, Object values)
+            {
+
+            }
+        });
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener()
+        {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, final int position, long id)
+            {
+                HomeArticleGoodsDetailsFragment homeArticleGoodsDetailsFragment = HomeArticleGoodsDetailsFragment.newInstance("", "" + articles.get(position).getId(),1);
+                ((BaseActivity) mContext).navigationToFragment(homeArticleGoodsDetailsFragment);
+                homeArticleGoodsDetailsFragment.setOnCommentListener(new HomeArticleGoodsDetailsFragment.OnCommentListener()
+                {
+                    @Override
+                    public void setComment(int num)
+                    {
+                        if (num != 0)
+                        {
+                            articles.get(position).setReviews(num);
+                            adapterList.notifyDataSetChanged();
+                        }
+                    }
+                });
+            }
+        });
 
         mScrollView = (PullToRefreshScrollView) view.findViewById(R.id.sv_home_scrollview);
         mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
@@ -321,7 +341,7 @@ public class MainHomeFragment extends BaseFragment implements
 
         currentPage = 1;
 
-        mRequestQueue = Volley.newRequestQueue(getActivity());
+        mRequestQueue = ZDApplication.newRequestQueue();
 
         linearLayout = (LinearLayout) view.findViewById(R.id.bannerView);
         unreadMsg = (TextView) view.findViewById(R.id.unreadMsg);
@@ -420,7 +440,7 @@ public class MainHomeFragment extends BaseFragment implements
     {
         final String url = ZhaiDou.HomeArticleGoodsUrl + page;
         ToolUtils.setLog(url);
-        JsonObjectRequest jr = new JsonObjectRequest(url ,new Response.Listener<JSONObject>()
+        ZhaiDouRequest jr = new ZhaiDouRequest(url ,new Response.Listener<JSONObject>()
         {
             @Override
             public void onResponse(JSONObject response)
@@ -495,25 +515,13 @@ public class MainHomeFragment extends BaseFragment implements
                     nullNetView.setVisibility(View.GONE);
                 }
             }
-        })
-        {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError
-            {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                return headers;
-            }
-        };
+        });
         mRequestQueue.add(jr);
     }
 
     private void FetchSpecialData()
     {
-        final Map<String, String> headers = new HashMap<String, String>();
-        headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-
-        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.HomeBannerUrl + "03,05,06", new Response.Listener<JSONObject>()
+        ZhaiDouRequest request = new ZhaiDouRequest(ZhaiDou.HomeBannerUrl + "03,05,06", new Response.Listener<JSONObject>()
         {
             @Override
             public void onResponse(JSONObject response)
@@ -566,20 +574,7 @@ public class MainHomeFragment extends BaseFragment implements
                     }
                 }
             }
-        }, new Response.ErrorListener()
-        {
-            @Override
-            public void onErrorResponse(VolleyError volleyError)
-            {
-            }
-        })
-        {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError
-            {
-                return headers;
-            }
-        };
+        },null);
         mRequestQueue.add(request);
     }
 
@@ -588,63 +583,7 @@ public class MainHomeFragment extends BaseFragment implements
      */
     private void FetchClickStatisticalData(String name,String url,int bannerType,int bannerIndex)
     {
-        int userId = (Integer) SharedPreferencesUtil.getData(mContext, "userId", -1);
-        String surl;
-        if (checkLogin())
-        {
-            surl=ZhaiDou.HomeClickStatisticalUrl+name+"&url="+url+"&userId="+userId+"&sourceCode=3&bannerType="+bannerType+"&bannerIndex="+bannerIndex;
-        }
-        else
-        {
-            surl=ZhaiDou.HomeClickStatisticalUrl+name+"&url="+url+"&sourceCode=3&bannerType="+bannerType+"&bannerIndex="+bannerIndex;
-        }
-
-        JsonObjectRequest request = new JsonObjectRequest(surl, new Response.Listener<JSONObject>()
-        {
-            @Override
-            public void onResponse(JSONObject response)
-            {
-                if (response != null)
-                {
-                    ToolUtils.setLog(response.toString());
-                }
-            }
-        }, new Response.ErrorListener()
-        {
-            @Override
-            public void onErrorResponse(VolleyError volleyError)
-            {
-            }
-        })
-        {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError
-            {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                return headers;
-            }
-        };
-        mRequestQueue.add(request);
-    }
-
-    @Override
-    public void onItemClick(AdapterView<?> adapterView, View view, final int position, long l)
-    {
-        HomeArticleGoodsDetailsFragment homeArticleGoodsDetailsFragment=HomeArticleGoodsDetailsFragment.newInstance("",""+articles.get(position).getId());
-        ((BaseActivity)mContext).navigationToFragment(homeArticleGoodsDetailsFragment);
-        homeArticleGoodsDetailsFragment.setOnCommentListener(new HomeArticleGoodsDetailsFragment.OnCommentListener()
-        {
-            @Override
-            public void setComment(int num)
-            {
-                if (num!=0)
-                {
-                    articles.get(position).setReviews(num);
-                    adapterList.notifyDataSetChanged();
-                }
-            }
-        });
+        Api.getBannerClick(mContext,name,url,bannerType,bannerIndex,null,null);
     }
 
     @Override
@@ -667,40 +606,6 @@ public class MainHomeFragment extends BaseFragment implements
         FetchData(++currentPage);
     }
 
-
-
-    public class ArticleAdapter extends BaseListAdapter<Article>
-    {
-        Context context;
-
-        public ArticleAdapter(Context context, List<Article> list)
-        {
-            super(context, list);
-            this.context = context;
-        }
-
-        @Override
-        public View bindView(int position, View convertView, ViewGroup parent)
-        {
-            convertView = mHashMap.get(position);
-            if (convertView == null)
-                convertView = mInflater.inflate(R.layout.item_home_article_list, null);
-            ImageView cover = ViewHolder.get(convertView, R.id.cover);
-            cover.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, screenWidth * 400/ 750));
-            TextView title = ViewHolder.get(convertView, R.id.title);
-            TypeFaceTextView info = ViewHolder.get(convertView, R.id.info);
-            TypeFaceTextView comments = ViewHolder.get(convertView, R.id.comments);
-
-            Article article = getList().get(position);
-            ToolUtils.setImageCacheUrl(article.getImg_url(), cover,R.drawable.icon_loading_item);
-            title.setText(article.getTitle());
-            info.setText(article.getInfo());
-            comments.setText("评论:"+article.getReviews());
-
-            mHashMap.put(position, convertView);
-            return convertView;
-        }
-    }
 
     @Override
     public void onHiddenChanged(boolean hidden) {

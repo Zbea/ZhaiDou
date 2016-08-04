@@ -1,0 +1,51 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/page_bg"
+    android:orientation="vertical">
+
+    <include
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        layout="@layout/head_style_share_page"
+        ></include>
+
+    <LinearLayout
+        android:id="@+id/nullline"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:visibility="gone"
+        android:gravity="center">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:src="@drawable/icon_null_search"/>
+
+        <com.zhaidou.view.TypeFaceTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_main_color"
+            android:layout_marginTop="50dp"
+            android:layout_marginBottom="80dp"
+            android:text="抱歉,暂时没有相关内容"/>
+
+    </LinearLayout>
+
+    <com.pulltorefresh.PullToRefreshGridView
+        xmlns:ptr="http://schemas.android.com/apk/res-auto"
+        ptr:ptrHeaderTextColor="@color/gray_9"
+        android:id="@+id/gv_single"
+        android:layout_width="match_parent"
+        android:numColumns="2"
+        android:horizontalSpacing="10dp"
+        android:verticalSpacing="10dp"
+        android:scrollbars="none"
+        android:layout_margin="10dp"
+        android:listSelector="@android:color/transparent"
+        android:layout_height="match_parent"/>
+
+
+</LinearLayout>

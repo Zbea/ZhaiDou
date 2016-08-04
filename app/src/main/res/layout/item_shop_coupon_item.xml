@@ -17,10 +17,11 @@
         android:background="@drawable/magic_shape"
         >
         <TextView
+            android:id="@+id/moneySymbol"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/green_color"
-            android:textSize="25sp"
+            android:textSize="20sp"
             android:layout_marginTop="4dp"
             android:text="￥"/>
 
@@ -29,7 +30,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/green_color"
-            android:textSize="32sp"
+            android:textSize="28sp"
             android:text="50"/>
 
         <ImageView
@@ -46,9 +47,18 @@
             android:gravity="center_vertical"
             android:layout_weight="1">
 
+            <com.zhaidou.view.TypeFaceTextView
+                android:id="@+id/info"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:text="满500使用"
+                android:textColor="@color/text_normal_color"/>
+
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
                 android:orientation="horizontal">
 
                 <com.zhaidou.view.TypeFaceTextView
@@ -69,14 +79,6 @@
 
             </LinearLayout>
 
-            <com.zhaidou.view.TypeFaceTextView
-                android:id="@+id/info"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="1dp"
-                android:textSize="13sp"
-                android:text="满500使用"
-                android:textColor="@color/text_normal_color"/>
 
         </LinearLayout>
 

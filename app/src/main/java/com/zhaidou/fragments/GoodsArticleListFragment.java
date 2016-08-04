@@ -3,7 +3,6 @@ package com.zhaidou.fragments;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -11,30 +10,26 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.pulltorefresh.PullToRefreshBase;
-import com.pulltorefresh.PullToRefreshScrollView;
+import com.pulltorefresh.PullToRefreshListView;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.R;
 import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.WebViewActivity;
+import com.zhaidou.adapter.ArticleGoodsAdapter;
 import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
-import com.zhaidou.base.BaseListAdapter;
-import com.zhaidou.base.ViewHolder;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.CartGoodsItem;
+import com.zhaidou.model.ZhaiDouRequest;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.ToolUtils;
-import com.zhaidou.view.ListViewForScrollView;
 import com.zhaidou.view.TypeFaceTextView;
 
 import org.json.JSONArray;
@@ -42,12 +37,10 @@ import org.json.JSONObject;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
- * 软装清单
+ * 软装清单（文章商品点击进入）
  */
 public class GoodsArticleListFragment extends BaseFragment
 {
@@ -55,12 +48,11 @@ public class GoodsArticleListFragment extends BaseFragment
     private static final String ARG_CATEGORY = "category";
 
     private View view;
-    private String mParam1;
+    private int mParam;
     private String mString;
 
     private TextView titleTv;
-    private PullToRefreshScrollView scrollView;
-    private ListViewForScrollView listView;
+    private PullToRefreshListView listView;
     private TextView subtotalTv;
 
     private Dialog mDialog;
@@ -69,7 +61,7 @@ public class GoodsArticleListFragment extends BaseFragment
     private static final int UPDATE_HOMELIST = 3;
     private List<CartGoodsItem> articleList = new ArrayList<CartGoodsItem>();
 
-    private GoodsAdapter mGoodsAdapter;
+    private ArticleGoodsAdapter mGoodsAdapter;
     private int page = 1;
     private int pageSize;
     private int pageCount;
@@ -85,13 +77,13 @@ public class GoodsArticleListFragment extends BaseFragment
             }
             subtotalTv.setText("￥"+ToolUtils.isIntPrice(totalPrice));
             mGoodsAdapter.notifyDataSetChanged();
-            scrollView.onRefreshComplete();
+            listView.onRefreshComplete();
             if (articleList.size()< pageCount)
             {
-                scrollView.setMode(PullToRefreshBase.Mode.BOTH);
+                listView.setMode(PullToRefreshBase.Mode.BOTH);
             } else
             {
-                scrollView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
+                listView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
             }
 
         }
@@ -115,11 +107,11 @@ public class GoodsArticleListFragment extends BaseFragment
         }
     };
 
-    public static GoodsArticleListFragment newInstance(String param1, String string)
+    public static GoodsArticleListFragment newInstance(int param, String string)
     {
         GoodsArticleListFragment fragment = new GoodsArticleListFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
+        args.putInt(ARG_PARAM1, param);
         args.putString(ARG_CATEGORY, string);
         fragment.setArguments(args);
         return fragment;
@@ -135,7 +127,7 @@ public class GoodsArticleListFragment extends BaseFragment
         super.onCreate(savedInstanceState);
         if (getArguments() != null)
         {
-            mParam1 = getArguments().getString(ARG_PARAM1);
+            mParam = getArguments().getInt(ARG_PARAM1);
             mString = getArguments().getString(ARG_CATEGORY);
         }
     }
@@ -165,31 +157,33 @@ public class GoodsArticleListFragment extends BaseFragment
         titleTv.setText("软装清单");
 
         subtotalTv=(TextView) view.findViewById(R.id.detailsSubtotalTv);
-        scrollView = (PullToRefreshScrollView) view.findViewById(R.id.scrollView);
-        scrollView.setMode(PullToRefreshBase.Mode.BOTH);
-        scrollView.setOnRefreshListener(onRefreshListener);
-        listView = (ListViewForScrollView) view.findViewById(R.id.lv_special_list);
-        mGoodsAdapter = new GoodsAdapter(getActivity(), articleList);
+
+        listView = (PullToRefreshListView) view.findViewById(R.id.lv_special_list);
+        listView.setMode(PullToRefreshBase.Mode.BOTH);
+        listView.setOnRefreshListener(onRefreshListener);
+        mGoodsAdapter = new ArticleGoodsAdapter(getActivity(), articleList);
         listView.setAdapter(mGoodsAdapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener()
         {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id)
             {
-                if (articleList.get(position).storeId.equals("S"))
+                if (articleList.get(position-1).storeId.equals("S"))
                 {
-                    GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance(articleList.get(position).name, articleList.get(position).goodsId);
+                    GoodsDetailsFragment goodsDetailsFragment = GoodsDetailsFragment.newInstance("", "");
                     Bundle bundle = new Bundle();
-                    bundle.putString("index", articleList.get(position).goodsId);
-                    bundle.putString("page", articleList.get(position).name);
-                    bundle.putString("sizeId", articleList.get(position).sizeId);
+                    bundle.putString("index", articleList.get(position-1).goodsId);
+                    bundle.putString("page", articleList.get(position-1).name);
+                    bundle.putString("sizeId", articleList.get(position-1).sizeId);
                     goodsDetailsFragment.setArguments(bundle);
                     ((BaseActivity) getActivity()).navigationToFragmentWithAnim(goodsDetailsFragment);
 
                 } else
                 {
                     Intent intent = new Intent();
-                    intent.putExtra("url", articleList.get(position).userId);
+                    intent.putExtra("url", articleList.get(position-1).userId);
+                    intent.putExtra("title", articleList.get(position-1).name);
+                    intent.putExtra("imageUrl", articleList.get(position-1).imageUrl);
                     intent.setClass(mContext, WebViewActivity.class);
                     mContext.startActivity(intent);
                 }
@@ -212,8 +206,16 @@ public class GoodsArticleListFragment extends BaseFragment
 
     public void FetchData()
     {
-        String url = ZhaiDou.HomeArticleGoodsDetailsUrl + mString+"&pageNo="+page+"&pageSize=10";
-        JsonObjectRequest request = new JsonObjectRequest(url,
+        String url;
+        if (mParam==1)
+        {
+            url = ZhaiDou.HomeArticleGoodsDetailsUrl + mString+"&pageNo="+page+"&pageSize=10";
+        }
+        else
+        {
+            url = ZhaiDou.HomeSofeListDetailUrl + mString + "&pageNo=" + page + "&pageSize=10";
+        }
+        ZhaiDouRequest request = new ZhaiDouRequest(mContext,url,
                 new Response.Listener<JSONObject>()
                 {
                     @Override
@@ -237,7 +239,7 @@ public class GoodsArticleListFragment extends BaseFragment
                             Double aDouble= jsonObject1.optDouble("totalPrice");
                             DecimalFormat df=new DecimalFormat("#.00");
                             totalPrice=df.format(aDouble);
-                            JSONArray jsonArray = jsonObject1.optJSONArray("changeCaseProductPOs");
+                            JSONArray jsonArray = jsonObject1.optJSONArray(mParam==1?"changeCaseProductPOs":"designerListProductPOs");
                             if (jsonArray != null)
                                 for (int i = 0; i < jsonArray.length(); i++)
                                 {
@@ -285,77 +287,11 @@ public class GoodsArticleListFragment extends BaseFragment
                 if (page > 1)
                 {
                     page--;
-
                 }
                 ToolUtils.setToast(mContext, R.string.loading_fail_txt);
             }
-        }
-        )
-        {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError
-            {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                return headers;
-            }
-        };
-        ZDApplication.mRequestQueue.add(request);
-    }
-
-    public class GoodsAdapter extends BaseListAdapter<CartGoodsItem>
-    {
-        Context context;
-
-        public GoodsAdapter(Context context, List<CartGoodsItem> list)
-        {
-            super(context, list);
-            this.context = context;
-        }
-
-        @Override
-        public View bindView(int position, View convertView, ViewGroup parent)
-        {
-            if (convertView == null)
-                convertView = mInflater.inflate(R.layout.item_article_goods, null);
-
-            TextView goodsNameTv = ViewHolder.get(convertView, R.id.goodsNameTv);
-            TextView goodsSizeTv = ViewHolder.get(convertView, R.id.goodsSizeTv);
-            ImageView goodsImageTv = ViewHolder.get(convertView, R.id.goodsImageTv);
-            TextView goodsPriceTv = ViewHolder.get(convertView, R.id.goodsPriceTv);
-            TextView goodsNumTv = ViewHolder.get(convertView, R.id.goodsNumTv);
-            TextView goodsTypeTv = ViewHolder.get(convertView, R.id.goodsTypeTv);
-            TextView goodsBuyTv = ViewHolder.get(convertView, R.id.goodsBuyTv);
-
-            CartGoodsItem goodsItem = getList().get(position);
-            goodsNameTv.setText(goodsItem.name);
-            goodsSizeTv.setText(goodsItem.size);
-            goodsNumTv.setText("X"+goodsItem.num);
-            goodsPriceTv.setText("￥"+ToolUtils.isIntPrice(goodsItem.currentPrice+""));
-            ToolUtils.setImageCacheUrl(goodsItem.imageUrl, goodsImageTv, R.drawable.icon_loading_defalut);
-
-            if(goodsItem.storeId.equals("T"))
-            {
-                goodsTypeTv.setText("淘宝");
-                goodsTypeTv.setTextColor(Color.parseColor("#FD783A"));
-            }
-            else if(goodsItem.storeId.equals("M"))
-            {
-                goodsTypeTv.setText("天猫");
-                goodsTypeTv.setTextColor(Color.parseColor("#ff6262"));
-            }
-            else if(goodsItem.storeId.equals("J"))
-            {
-                goodsTypeTv.setText("京东");
-                goodsTypeTv.setTextColor(Color.parseColor("#ff6262"));
-            }
-            else
-            {
-                goodsTypeTv.setText("宅豆");
-                goodsTypeTv.setTextColor(getResources().getColor(R.color.green_color));
-            }
-            return convertView;
-        }
+        });
+        ZDApplication.newRequestQueue().add(request);
     }
 
     @Override

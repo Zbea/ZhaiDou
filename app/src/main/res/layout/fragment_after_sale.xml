@@ -171,7 +171,7 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentBottom="true"
                         android:layout_alignParentRight="true"
-                        android:background="@drawable/icon_return_flag" />
+                        android:background="@drawable/icon_order_return_flag" />
                 </RelativeLayout>
             </LinearLayout>
 
@@ -271,9 +271,4 @@
         </LinearLayout>
     </ScrollView>
 
-    <FrameLayout
-        android:id="@+id/rl_header_menu"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone" />
 </RelativeLayout>

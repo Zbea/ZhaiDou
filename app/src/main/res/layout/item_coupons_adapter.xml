@@ -1,33 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:id="@+id/ll_coupons"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:background="@drawable/coupons_bg"
     android:orientation="vertical"
     android:paddingLeft="15dp">
 
-    <RelativeLayout
+    <LinearLayout
         android:id="@+id/categoryLayout"
         android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
         android:layout_height="40dp">
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+        <com.zhaidou.view.TypeFaceTextView
+            android:id="@+id/tv_typeName"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:gravity="center_vertical"
+            android:text="全场通用"
+            android:textColor="@color/text_main_color" />
+
+        <com.zhaidou.view.TypeFaceTextView
+            android:layout_width="1dp"
+            android:layout_height="10dp"
+            android:gravity="center_vertical"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:background="@color/text_gary_color" />
 
         <com.zhaidou.view.TypeFaceTextView
             android:id="@+id/title"
             android:layout_width="wrap_content"
             android:layout_height="40dp"
+            android:layout_weight="1"
             android:gravity="center_vertical"
-            android:textColor="#666666" />
+            android:text="标题"
+            android:textColor="@color/text_main_color" />
+
+        </LinearLayout>
 
         <ImageView
             android:id="@+id/arrow"
-            android:layout_width="wrap_content"
+            android:layout_width="20dp"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:paddingRight="15dp"
+            android:layout_marginRight="15dp"
+            android:layout_marginLeft="15dp"
             android:src="@drawable/selector_coupon_arrow" />
-    </RelativeLayout>
+    </LinearLayout>
 
     <com.zhaidou.view.ClickableTextView
         android:id="@+id/category"
@@ -36,6 +64,7 @@
         android:layout_marginBottom="10dp"
         android:clickable="true"
         android:paddingRight="15dp"
+        android:textColor="@color/text_normal_color"
         android:text="桌面收纳" />
 
     <ImageView

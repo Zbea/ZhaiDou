@@ -36,9 +36,6 @@ public class MagicDesignFragment extends BaseFragment {
     private LinearLayout designBtn,qqBtn;
 
 
-
-
-
     private View.OnClickListener onClickListener=new View.OnClickListener()
     {
         @Override
@@ -57,7 +54,7 @@ public class MagicDesignFragment extends BaseFragment {
                     EaseUtils.startDesignerActivity(mContext);
                     break;
                 case R.id.caseBtn:
-                    MagicClassicCaseFragment magicClassicCaseFragment = MagicClassicCaseFragment.newInstance("", "");
+                    MagicClassicCaseFragment magicClassicCaseFragment = MagicClassicCaseFragment.newInstance("", "",1);
                     ((BaseActivity) getActivity()).navigationToFragment(magicClassicCaseFragment);
                     break;
             }
@@ -138,7 +135,7 @@ public class MagicDesignFragment extends BaseFragment {
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 System.out.println("url = " + url);
                 if ("zhaidouappdesigncase://designcase".equalsIgnoreCase(url)) {
-                    MagicClassicCaseFragment magicClassicCaseFragment = MagicClassicCaseFragment.newInstance("", "");
+                    MagicClassicCaseFragment magicClassicCaseFragment = MagicClassicCaseFragment.newInstance("", "",1);
                     ((BaseActivity) getActivity()).navigationToFragment(magicClassicCaseFragment);
                     return true;
                 } else if ("zhaidouappfaq://faq".equalsIgnoreCase(url)) {

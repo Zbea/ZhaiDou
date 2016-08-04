@@ -40,7 +40,7 @@
                 android:background="@drawable/icon_edit_bg"
                 android:textSize="13sp"
                 android:singleLine="true"
-                android:drawableRight="@drawable/cancel"
+                android:drawableRight="@drawable/icon_cancel"
                 android:paddingRight="10dp"
                 android:drawablePadding="10dp"
                 android:layout_marginLeft="10dp"
@@ -82,7 +82,7 @@
                 android:background="@drawable/icon_edit_bg"
                 android:textSize="13sp"
                 android:singleLine="true"
-                android:drawableRight="@drawable/cancel"
+                android:drawableRight="@drawable/icon_cancel"
                 android:paddingRight="10dp"
                 android:drawablePadding="10dp"
                 android:layout_marginLeft="10dp"
@@ -106,6 +106,28 @@
         android:textColor="@color/white"
         android:textSize="16sp"
         android:background="@drawable/btn_green_click_bg"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_marginBottom="20dp"
+        android:gravity="bottom|center_horizontal">
+
+        <com.zhaidou.view.TypeFaceTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_gary_color"
+            android:text="@string/registration_protocol"/>
+
+        <com.zhaidou.view.TypeFaceTextView
+            android:id="@+id/tv_protocol"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/green_color"
+            android:text="《宅豆注册协议》"/>
+
+        </LinearLayout>
 
 
 </LinearLayout>

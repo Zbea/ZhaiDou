@@ -22,7 +22,7 @@ public class SearchAdapter extends BaseListAdapter<String> {
     @Override
     public View bindView(int position, View convertView, ViewGroup parent) {
         if (convertView==null)
-            convertView=mInflater.inflate(R.layout.search_item_gv,null);
+            convertView=mInflater.inflate(R.layout.item_search_gv,null);
         TextView tv_item = ViewHolder.get(convertView,R.id.tv_search_item);
         String item = getList().get(position);
         tv_item.setText(item);

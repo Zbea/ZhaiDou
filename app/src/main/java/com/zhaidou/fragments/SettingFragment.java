@@ -3,8 +3,6 @@ package com.zhaidou.fragments;
 import android.app.Dialog;
 import android.app.NotificationManager;
 import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -14,12 +12,9 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.MainActivity;
 import com.zhaidou.R;
@@ -28,11 +23,14 @@ import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.AccountManage;
 import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
+import com.zhaidou.base.CartCountManager;
 import com.zhaidou.base.CountManager;
+import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.dialog.CustomVersionUpdateDialog;
 import com.zhaidou.easeui.helpdesk.EaseHelper;
+import com.zhaidou.model.ZhaiDouRequest;
+import com.zhaidou.utils.Api;
 import com.zhaidou.utils.DialogUtils;
-import com.zhaidou.utils.NetService;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
@@ -42,8 +40,6 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.text.DecimalFormat;
-import java.util.HashMap;
-import java.util.Map;
 
 public class SettingFragment extends BaseFragment implements View.OnClickListener{
     private static final String ARG_PARAM1 = "param1";
@@ -57,7 +53,6 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
     ProfileFragment mProfileFragment;
     private TextView tv_size;
 
-    SharedPreferences mSharedPreferences;
     RequestQueue requestQueue;
     private DialogUtils mDialogUtil;
     private Dialog mDialog;
@@ -77,23 +72,11 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
                     SharedPreferencesUtil.clearUser(getActivity());
                     CountManager.getInstance().clearCache();
                     AccountManage.getInstance().notifyLogOut();
-                    Intent intent = new Intent(ZhaiDou.IntentRefreshLoginExitTag);
-                    mContext.sendBroadcast(intent);
                     EaseHelper.getInstance().logout(true,null);
                             ((MainActivity) mContext).logout(SettingFragment.this);
                     NotificationManager notificationManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
                     notificationManager.cancel(0525);
-                    ((MainActivity) mContext).CartTip(0);
-                    break;
-                case 1:
-                    serverCode = parseJosn(msg.obj.toString());
-                    ToolUtils.setLog(" ZDApplication.localVersionCode:" + ZDApplication.localVersionCode);
-                    if (serverCode > ZDApplication.localVersionCode) {
-                        CustomVersionUpdateDialog customVersionUpdateDialog = new CustomVersionUpdateDialog(mContext, serverName, serverUrl);
-                        customVersionUpdateDialog.checkUpdateInfo();
-                    } else {
-                        ToolUtils.setToast(mContext, "当前版本为最新版本");
-                    }
+                    CartCountManager.newInstance().notify(0);
                     break;
             }
         }
@@ -139,17 +122,13 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
         view.findViewById(R.id.ll_recommend).setOnClickListener(this);
         view.findViewById(R.id.ll_profile).setOnClickListener(this);
         view.findViewById(R.id.ll_psw_change).setOnClickListener(this);
-        view.findViewById(R.id.ll_competition).setOnClickListener(this);
-        view.findViewById(R.id.ll_bbs_question).setOnClickListener(this);
         view.findViewById(R.id.ll_collocation).setOnClickListener(this);
         view.findViewById(R.id.ll_add_v).setOnClickListener(this);
         view.findViewById(R.id.ll_version).setOnClickListener(this);
-        view.findViewById(R.id.ll_award_history).setOnClickListener(this);
         view.findViewById(R.id.ll_clear).setOnClickListener(this);
         view.findViewById(R.id.ll_about).setOnClickListener(this);
         view.findViewById(R.id.bt_logout).setOnClickListener(this);
-        mSharedPreferences = getActivity().getSharedPreferences("zhaidou", Context.MODE_PRIVATE);
-        requestQueue = Volley.newRequestQueue(getActivity());
+        requestQueue = ZDApplication.newRequestQueue();
 
         tv_size.setText(setCountSize());
 
@@ -272,12 +251,6 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
                 ModifyPswFragment modifyPswFragment = new ModifyPswFragment();
                 ((BaseActivity) getActivity()).navigationToFragment(modifyPswFragment);
                 break;
-            case R.id.ll_competition:
-                WebViewFragment webViewFragment = WebViewFragment.newInstance("http://www.zhaidou.com/competitions/current?zdclient=ios", true);
-                ((BaseActivity) getActivity()).navigationToFragmentWithAnim(webViewFragment);
-                break;
-            case R.id.ll_bbs_question:
-                break;
             case R.id.ll_collocation:
                 ImageBgFragment fragment = ImageBgFragment.newInstance("豆搭教程");
                 ((BaseActivity) getActivity()).navigationToFragmentWithAnim(fragment);
@@ -312,13 +285,17 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
                 mDialogUtil.showDialog("确定退出登录？", new DialogUtils.PositiveListener() {
                     @Override
                     public void onPositive() {
-                        logout();
+                        if (NetworkUtils.isNetworkAvailable(mContext)) {
+                            logout();
+                        } else {
+                            ToolUtils.setToast(mContext, "抱歉,网络连接失败");
+                        }
                     }
                 }, null);
                 break;
             case R.id.ll_version:
                 if (NetworkUtils.isNetworkAvailable(mContext)) {
-                    getVersionServer();
+                    FetchAPK();
                 } else {
                     ToolUtils.setToast(mContext, "抱歉,网络连接失败");
                 }
@@ -328,51 +305,44 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
         }
     }
 
-    /**
-     * 获取版本信息
-     */
-    private void getVersionServer() {
-        new Thread(new Runnable() {
+    private void FetchAPK()
+    {
+        Api.getApkManage(new Api.SuccessListener()
+        {
             @Override
-            public void run() {
-                String url = ZhaiDou.ApkUrl;
-                String result = NetService.GETHttpService(url, mContext);
-                if (result != null) {
-                    mHandler.obtainMessage(1, result).sendToTarget();
+            public void onSuccess(Object jsonObject)
+            {
+                if (jsonObject != null)
+                {
+                    JSONObject object = ((JSONObject) jsonObject).optJSONObject("data");
+                    if (object != null)
+                        serverName = object.optString("app_version");
+                    serverCode = object.optInt("code_version");
+                    serverUrl = object.optString("package_url");
+                    if (serverCode > ZDApplication.localVersionCode) {
+                        CustomVersionUpdateDialog customVersionUpdateDialog = new CustomVersionUpdateDialog(mContext, serverName, serverUrl);
+                        customVersionUpdateDialog.checkUpdateInfo();
+                    } else {
+                        ToolUtils.setToast(mContext, "当前版本为最新版本");
+                    }
                 }
             }
-        }).start();
-    }
-
-    /**
-     * 版本信息解析
-     *
-     * @param json
-     * @return
-     */
-    private int parseJosn(String json) {
-        try {
-            JSONObject jsonObject = new JSONObject(json);
-            if (jsonObject != null) {
-                JSONObject object = jsonObject.optJSONObject("data");
-                if (object != null)
-                    serverName = object.optString("app_version");
-                serverCode = object.optInt("code_version");
-                serverUrl = object.optString("package_url");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return serverCode;
+        }, null);
     }
 
     public void logout() {
+        mDialog= CustomLoadingDialog.setLoadingDialog(mContext,"");
         final String token = (String) SharedPreferencesUtil.getData(mContext, "token", "");
-        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.USER_LOGOUT_URL + "?token=" + token
+        ZhaiDouRequest request = new ZhaiDouRequest(ZhaiDou.USER_LOGOUT_URL + "?token=" + token
                 , new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 if (mDialog != null) mDialog.dismiss();
+                if (jsonObject==null)
+                {
+                    ShowToast("抱歉,退出失败");
+                    return;
+                }
                 int status = jsonObject.optInt("status");
                 String message = jsonObject.optString("message");
                 if (status == 200) {
@@ -386,17 +356,10 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
-                ShowToast("网络异常");
+                if (mDialog != null) mDialog.dismiss();
+                ShowToast("抱歉,退出失败");
             }
-        }) {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                headers.put("token", token);
-                return headers;
-            }
-        };
+        });
         requestQueue.add(request);
     }
 

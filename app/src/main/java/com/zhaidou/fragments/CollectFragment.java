@@ -22,11 +22,11 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
 import com.pulltorefresh.PullToRefreshBase;
 import com.pulltorefresh.PullToRefreshGridView;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.R;
+import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.WebViewActivity;
 import com.zhaidou.adapter.ProductAdapter;
@@ -34,6 +34,7 @@ import com.zhaidou.base.BaseFragment;
 import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Product;
+import com.zhaidou.model.ZhaiDouRequest;
 import com.zhaidou.utils.DialogUtils;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
@@ -124,7 +125,7 @@ public class CollectFragment extends BaseFragment implements PullToRefreshBase.O
         mContext = getActivity();
         mDialogUtils = new DialogUtils(mContext);
 
-        mRequestQueue = Volley.newRequestQueue(mContext);
+        mRequestQueue = ZDApplication.newRequestQueue();
         productAdapter = new ProductAdapter(getActivity(), products, 2, screenWidth);
         mGridView.setAdapter(productAdapter);
 
@@ -162,13 +163,7 @@ public class CollectFragment extends BaseFragment implements PullToRefreshBase.O
         nullLine = (LinearLayout) view.findViewById(R.id.nullLine);
 
         if (NetworkUtils.isNetworkAvailable(getActivity())) {
-            mDialog = CustomLoadingDialog.setLoadingDialog(getActivity(), "loading",true);
-//            mHandler.postDelayed(new Runnable() {
-//                @Override
-//                public void run() {
-//
-//                }
-//            },300);
+            mDialog = CustomLoadingDialog.setLoadingDialog(getActivity(), "loading");
             FetchCollectData();
         } else {
             ToolUtils.setToast(getActivity(), "抱歉,网络连接失败");
@@ -248,11 +243,10 @@ public class CollectFragment extends BaseFragment implements PullToRefreshBase.O
     private void deleteTask(int itemId, final int position) {
         mDialog = CustomLoadingDialog.setLoadingDialog(getActivity(), "");
         int userId = (Integer) SharedPreferencesUtil.getData(mContext, "userId", -1);
-        final String token = (String) SharedPreferencesUtil.getData(mContext, "token", "");
         Map<String, String> params = new HashMap<String, String>();
         params.put("liker_id", userId + "");
         params.put("article_item_id", itemId + "");
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, ZhaiDou.USER_DELETE_COLLECT_ITEM_URL, new JSONObject(params), new Response.Listener<JSONObject>() {
+        ZhaiDouRequest request = new ZhaiDouRequest(Request.Method.POST, ZhaiDou.USER_DELETE_COLLECT_ITEM_URL,params, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 if (mDialog != null)
@@ -275,20 +269,7 @@ public class CollectFragment extends BaseFragment implements PullToRefreshBase.O
                     ShowToast("抱歉,取消失败");
                 }
             }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError volleyError) {
-
-            }
-        }) {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("SECAuthorization", token);
-                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                return headers;
-            }
-        };
+        }, null) ;
         mRequestQueue.add(request);
     }
 

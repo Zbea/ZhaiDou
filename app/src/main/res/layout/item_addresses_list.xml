@@ -41,7 +41,7 @@
             android:id="@+id/tv_defalue_hint"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@color/red"
+            android:background="@drawable/btn_red_click_selector"
             android:text="默认"
             android:visibility="gone"
             android:textColor="@color/white"
@@ -117,7 +117,7 @@
             <ImageView
                 android:layout_width="17dp"
                 android:layout_height="17dp"
-                android:src="@drawable/delete"/>
+                android:src="@drawable/icon_delete"/>
 
             <com.zhaidou.view.TypeFaceTextView
                 android:layout_width="wrap_content"

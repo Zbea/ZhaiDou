@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import com.zhaidou.model.CartGoodsItem;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -21,8 +22,7 @@ public class CreatCartTools
      */
     public static List<CartGoodsItem> selectByAll(CreatCartDB cartDB,int userId)
     {
-        items.removeAll(items);
-        List<CartGoodsItem> itemss=new ArrayList<CartGoodsItem>();
+        items.clear();
         SQLiteDatabase sqLiteDatabase=cartDB.getReadableDatabase();
         sqLiteDatabase.beginTransaction();
         try
@@ -47,8 +47,8 @@ public class CreatCartTools
                 item.isOSale = cursor.getString(cursor.getColumnIndex("isOSale"));
                 item.isCheck = false;
                 item.isDate="false";
-                item.creatTime = cursor.getLong(cursor.getColumnIndex("creatTime"));
-                itemss.add(item);
+                item.createTime = cursor.getInt(cursor.getColumnIndex("creatTime"));
+                items.add(item);
             }
             sqLiteDatabase.setTransactionSuccessful();
             cursor.close();
@@ -62,11 +62,7 @@ public class CreatCartTools
             sqLiteDatabase.endTransaction();
             sqLiteDatabase.close();
         }
-        //反序
-        for(int i=itemss.size()-1;i>=0;i--)
-        {
-            items.add(itemss.get(i));
-        }
+        Collections.reverse(items);
         return items;
     }
 
@@ -197,7 +193,7 @@ public class CreatCartTools
                 values.put("isPublish", itm.isPublish);
                 values.put("isOver", itm.isOver);
                 values.put("isOSale", itm.isOSale);
-                values.put("creatTime", itm.creatTime);
+                values.put("creatTime", itm.createTime);
                 sqLiteDatabase.insert(CreatCartDB.SqlName, null, values);
             }
             else

@@ -17,24 +17,22 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
 import com.pulltorefresh.PullToRefreshBase;
 import com.pulltorefresh.PullToRefreshScrollView;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.R;
+import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.ItemDetailActivity;
 import com.zhaidou.adapter.HomeListAdapter;
-import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Article;
 import com.zhaidou.model.Category;
+import com.zhaidou.model.ZhaiDouRequest;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
@@ -45,9 +43,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 
 /**
@@ -71,7 +67,7 @@ public class HomeStrategyFragment extends BaseFragment
     private static FrameLayout fl_category_menu;
     private static ImageView mCategoryView, mDotView;
 
-    private TypeFaceTextView backBtn, titleTv;
+    private TypeFaceTextView  titleTv;
     private PullToRefreshScrollView mScrollView;
     private ListViewForScrollView mListView;
     private boolean loadedAll = false;
@@ -186,9 +182,6 @@ public class HomeStrategyFragment extends BaseFragment
         {
             switch (view.getId())
             {
-                case R.id.ll_back:
-                    ((BaseActivity) getActivity()).popToStack(HomeStrategyFragment.this);
-                    break;
                 case R.id.ll_category_view:
                     toggleMenu();
                     break;
@@ -260,8 +253,6 @@ public class HomeStrategyFragment extends BaseFragment
         reloadNetBtn = (TextView) mView.findViewById(R.id.netReload);
         reloadNetBtn.setOnClickListener(onClickListener);
 
-        backBtn = (TypeFaceTextView) mView.findViewById(R.id.ll_back);
-        backBtn.setOnClickListener(onClickListener);
         titleTv = (TypeFaceTextView) mView.findViewById(R.id.title_tv);
         titleTv.setText(R.string.title_home_strategy);
 
@@ -287,7 +278,7 @@ public class HomeStrategyFragment extends BaseFragment
 
         currentPage = 1;
         loadedAll = false;
-        mRequestQueue = Volley.newRequestQueue(mContext);
+        mRequestQueue = ZDApplication.newRequestQueue();
 
     }
 
@@ -297,8 +288,7 @@ public class HomeStrategyFragment extends BaseFragment
      */
     private void initData()
     {
-        mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading", isDialogFirstVisible);
-        isDialogFirstVisible = false;
+        mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading");
         if (NetworkUtils.isNetworkAvailable(mContext))
         {
             FetchData(currentPage, null);
@@ -350,7 +340,7 @@ public class HomeStrategyFragment extends BaseFragment
         String categoryId = (category == null ? "" : category.getId() + "");
         final String url;
         url = ZhaiDou.HOME_CATEGORY_URL + page + ((category == null) ? "&catetory_id" : "&catetory_id=" + categoryId);
-        JsonObjectRequest jr = new JsonObjectRequest(url, new Response.Listener<JSONObject>()
+        ZhaiDouRequest jr = new ZhaiDouRequest(url, new Response.Listener<JSONObject>()
         {
             @Override
             public void onResponse(JSONObject response)
@@ -403,16 +393,7 @@ public class HomeStrategyFragment extends BaseFragment
                     mScrollView.setMode(PullToRefreshBase.Mode.BOTH);
                 }
             }
-        })
-        {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError
-            {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                return headers;
-            }
-        };
+        });
         mRequestQueue.add(jr);
     }
 

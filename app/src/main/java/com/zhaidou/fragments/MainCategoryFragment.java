@@ -5,8 +5,6 @@ import android.app.Dialog;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,14 +17,12 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.alibaba.fastjson.JSON;
-import com.android.volley.AuthFailureError;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.R;
+import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
@@ -35,6 +31,7 @@ import com.zhaidou.base.ViewHolder;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Category;
 import com.zhaidou.model.CategoryItem;
+import com.zhaidou.model.ZhaiDouRequest;
 import com.zhaidou.utils.ToolUtils;
 
 import org.json.JSONArray;
@@ -43,7 +40,6 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 全类别
@@ -56,6 +52,7 @@ public class MainCategoryFragment extends BaseFragment {
     private String mParam1="";
     private String mParam2;
 
+    private View mView;
     private LinearLayout searchBtn;
 
     private OnFragmentInteractionListener mListener;
@@ -73,15 +70,7 @@ public class MainCategoryFragment extends BaseFragment {
     private int mCheckPosition = 0;
     private HashMap<Integer, View> mCategoryView = new HashMap<Integer, View>();
     private HashMap<Integer, View> mCategoryItemView = new HashMap<Integer, View>();
-    private Handler mHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case UPDATE_CATEGORY_DATA:
-                    break;
-            }
-        }
-    };
+
 
     public static MainCategoryFragment newInstance(String param1, String param2) {
         MainCategoryFragment fragment = new MainCategoryFragment();
@@ -107,46 +96,58 @@ public class MainCategoryFragment extends BaseFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_main_category, container, false);
-        TextView titleTv=(TextView) view.findViewById(R.id.tv_title);
-        titleTv.setText(mParam1.length()>0?mParam1:"旅行收纳");
-        searchBtn = (LinearLayout) view.findViewById(R.id.ll_searchs);
-        searchBtn.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                SearchFragment searchFragment = SearchFragment.newInstance(mParam1, 1);
-                ((BaseActivity) getActivity()).navigationToFragmentWithAnim(searchFragment);
-            }
-        });
 
-        mCategoryListView = (ListView) view.findViewById(R.id.category);
-        mGridView = (GridView) view.findViewById(R.id.categoryItem);
-        mCategoryAdapter = new CategoryAdapter(getActivity(), categoryList);
-        mCategoryListView.setAdapter(mCategoryAdapter);
-        mCategoryItemAdapter = new CategoryItemAdapter(getActivity(), new ArrayList<CategoryItem>());
-        mGridView.setAdapter(mCategoryItemAdapter);
-        mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener()
+        if (mView == null)
         {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+            mContext = getActivity();
+            mView = inflater.inflate(R.layout.fragment_main_category, container, false);
+            TextView titleTv=(TextView) mView.findViewById(R.id.tv_title);
+            titleTv.setText(mParam1.length()>0?mParam1:"旅行收纳");
+            searchBtn = (LinearLayout) mView.findViewById(R.id.ll_searchs);
+            searchBtn.setOnClickListener(new View.OnClickListener()
             {
-                SearchFragment searchFragment = SearchFragment.newInstance(mCategoryItemAdapter.getList().get(position).categoryId, 2);
-                ((BaseActivity) getActivity()).navigationToFragmentWithAnim(searchFragment);
-            }
-        });
-        mRequestQueue = Volley.newRequestQueue(getActivity());
-        getCategoryData();
-        mDialog = CustomLoadingDialog.setLoadingDialog(getActivity(), "loading");
-        mCategoryAdapter.setOnInViewClickListener(R.id.categoryView, new BaseListAdapter.onInternalClickListener() {
-            @Override
-            public void OnClickListener(View parentV, View v, Integer position, Object values) {
-                mCheckPosition = position;
-                mCategoryAdapter.notifyDataSetChanged();
-            }
-        });
-        return view;
+                @Override
+                public void onClick(View v)
+                {
+                    SearchFragment searchFragment = SearchFragment.newInstance(mParam1,mParam1, 1);
+                    ((BaseActivity) getActivity()).navigationToFragmentWithAnim(searchFragment);
+                }
+            });
+
+            mCategoryListView = (ListView) mView.findViewById(R.id.category);
+            mGridView = (GridView) mView.findViewById(R.id.categoryItem);
+            mCategoryAdapter = new CategoryAdapter(getActivity(), categoryList);
+            mCategoryListView.setAdapter(mCategoryAdapter);
+            mCategoryItemAdapter = new CategoryItemAdapter(getActivity(), new ArrayList<CategoryItem>());
+            mGridView.setAdapter(mCategoryItemAdapter);
+            mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener()
+            {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+                {
+                    CategoryItem category=mCategoryItemAdapter.getList().get(position);
+                    SearchFragment searchFragment = SearchFragment.newInstance(category.categoryName,category.categoryId, 2);
+                    ((BaseActivity) getActivity()).navigationToFragmentWithAnim(searchFragment);
+                }
+            });
+            mRequestQueue = ZDApplication.newRequestQueue();
+            getCategoryData();
+            mDialog = CustomLoadingDialog.setLoadingDialog(getActivity(), "loading");
+            mCategoryAdapter.setOnInViewClickListener(R.id.categoryView, new BaseListAdapter.onInternalClickListener() {
+                @Override
+                public void OnClickListener(View parentV, View v, Integer position, Object values) {
+                    mCheckPosition = position;
+                    mCategoryAdapter.notifyDataSetChanged();
+                }
+            });
+        }
+        //缓存的rootView需要判断是否已经被加过parent， 如果有parent需要从parent删除，要不然会发生这个rootview已经有parent的错误。
+        ViewGroup parent = (ViewGroup) mView.getParent();
+        if (parent != null)
+        {
+            parent.removeView(mView);
+        }
+        return mView;
     }
 
     public void onButtonPressed(Uri uri) {
@@ -183,7 +184,7 @@ public class MainCategoryFragment extends BaseFragment {
 
 
     private void getCategoryData() {
-        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.HomeCategoryUrl, new Response.Listener<JSONObject>() {
+        ZhaiDouRequest request = new ZhaiDouRequest(ZhaiDou.HomeCategoryUrl, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 if (mDialog != null)
@@ -205,28 +206,11 @@ public class MainCategoryFragment extends BaseFragment {
                     mDialog.dismiss();
                 ToolUtils.setToast(mContext, "加载失败");
             }
-        }) {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                return headers;
-            }
-        };
+        });
         mRequestQueue.add(request);
     }
 
 
-    @Override
-    public void onHiddenChanged(boolean hidden) {
-        super.onHiddenChanged(hidden);
-        if (!hidden) {
-            if (categoryList == null | categoryList.size() < 1) {
-                getCategoryData();
-            }
-        }
-
-    }
 
     public void onResume() {
         super.onResume();
@@ -283,5 +267,15 @@ public class MainCategoryFragment extends BaseFragment {
         }
     }
 
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        if (!hidden) {
+            if (categoryList == null | categoryList.size() < 1) {
+                getCategoryData();
+            }
+        }
+
+    }
 
 }

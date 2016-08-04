@@ -1,62 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/main_personal"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/page_bg"
     android:orientation="vertical">
 
-    <RelativeLayout
-        android:id="@+id/accountInfoBtn"
+    <ImageView
         android:layout_width="match_parent"
         android:layout_height="200dp"
-        android:background="@drawable/bg_personal"
-        android:clickable="true">
-
-        <FrameLayout
-            android:id="@+id/unreadMsgLayout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:visibility="visible">
-
-            <ImageView
-                android:id="@+id/iv_message"
-                android:layout_width="50dp"
-                android:layout_height="match_parent"
-                android:padding="14dp"
-                android:src="@drawable/icon_msg_white" />
-
-            <com.zhaidou.view.TypeFaceTextView
-                android:id="@+id/unreadMsg"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="right|center"
-                android:layout_marginRight="5dp"
-                android:layout_marginTop="-8dp"
-                android:background="@drawable/msg_selector"
-                android:gravity="center"
-                android:minWidth="15dp"
-                android:paddingLeft="3dp"
-                android:paddingRight="3dp"
-                android:textColor="@color/white"
-                android:textSize="11sp"
-                android:visibility="gone" />
-        </FrameLayout>
-    </RelativeLayout>
+        android:src="@drawable/bg_personal"
+        android:scaleType="fitXY"
+        android:clickable="true"/>
 
     <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/page_bg"
-        android:scrollbars="vertical">
+        android:scrollbars="none">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
 
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="200dp"></View>
 
             <LinearLayout
+                android:id="@+id/accountInfoBtn"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/white"
@@ -114,7 +87,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
-                    android:drawableLeft="@drawable/icon_all_order"
+                    android:drawableLeft="@drawable/icon_account_order"
                     android:drawablePadding="10dp"
                     android:gravity="center"
                     android:paddingLeft="15dp"
@@ -168,7 +141,7 @@
                         android:layout_height="wrap_content"
                         android:layout_centerInParent="true"
                         android:scaleType="center"
-                        android:src="@drawable/icon_pre_pay"
+                        android:src="@drawable/icon_order_pre_pay"
                         android:textColor="@color/text_main_color" />
 
                     <TextView
@@ -200,7 +173,7 @@
                     android:layout_marginTop="12dp"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:src="@drawable/icon_pre_received"
+                    android:src="@drawable/icon_order_pre_received"
                     android:textColor="@color/text_main_color" />
 
                 <ImageView
@@ -214,14 +187,14 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:src="@drawable/icon_return"
+                    android:src="@drawable/icon_order_return"
                     android:textColor="@color/text_main_color" />
             </LinearLayout>
 
             <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="10dp"
-                android:background="#F5F5F5" />
+                android:background="@color/page_bg" />
 
             <com.zhaidou.view.ChildGridView
                 android:id="@+id/gridView"
@@ -229,6 +202,7 @@
                 android:layout_height="wrap_content"
                 android:horizontalSpacing="1dp"
                 android:numColumns="3"
+                android:background="@color/page_bg"
                 android:verticalSpacing="1dp" />
 
             <ImageView
@@ -248,7 +222,7 @@
                 <com.zhaidou.view.TypeFaceTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:drawableLeft="@drawable/icon_addr"
+                    android:drawableLeft="@drawable/icon_account_addr"
                     android:drawablePadding="10dp"
                     android:gravity="center_vertical"
                     android:paddingLeft="15dp"
@@ -287,7 +261,7 @@
                 <com.zhaidou.view.TypeFaceTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:drawableLeft="@drawable/icon_setting"
+                    android:drawableLeft="@drawable/icon_account_setting"
                     android:drawablePadding="10dp"
                     android:gravity="center"
                     android:paddingLeft="15dp"
@@ -315,4 +289,37 @@
 
         </LinearLayout>
     </ScrollView>
-</LinearLayout>
+
+
+    <FrameLayout
+        android:id="@+id/unreadMsgLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:visibility="visible">
+
+        <ImageView
+            android:id="@+id/iv_message"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:padding="14dp"
+            android:src="@drawable/icon_message_white" />
+
+        <com.zhaidou.view.TypeFaceTextView
+            android:id="@+id/unreadMsg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right|center"
+            android:layout_marginRight="5dp"
+            android:layout_marginTop="-8dp"
+            android:background="@drawable/msg_selector"
+            android:gravity="center"
+            android:minWidth="15dp"
+            android:paddingLeft="3dp"
+            android:paddingRight="3dp"
+            android:textColor="@color/white"
+            android:textSize="11sp"
+            android:visibility="gone" />
+    </FrameLayout>
+
+</RelativeLayout>

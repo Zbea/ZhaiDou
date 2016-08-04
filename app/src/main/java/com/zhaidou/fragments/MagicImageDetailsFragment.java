@@ -20,18 +20,16 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
 import com.zhaidou.R;
+import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
-import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.Article;
+import com.zhaidou.model.ZhaiDouRequest;
 import com.zhaidou.utils.EaseUtils;
 import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.ToolUtils;
@@ -43,9 +41,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.WeakHashMap;
 
 /**
@@ -61,10 +57,9 @@ public class MagicImageDetailsFragment extends BaseFragment
     private View view;
 
     private RelativeLayout headerLine, bottomLine;
-    private TypeFaceTextView titleTv;
+    private TypeFaceTextView titleTv,currentTv,totalTv;
     private LinearLayout backBtn;
     private WeakHashMap<Integer, View> mHashMap = new WeakHashMap<Integer, View>();
-    private LinearLayout dotsLine;
     private PicGallery gallery;
     private int currentPage = 1;
     private int pageSize;
@@ -88,40 +83,13 @@ public class MagicImageDetailsFragment extends BaseFragment
             switch (msg.what)
             {
                 case UPDATE_HOMELIST:
-                    setDotsView();
+                    setDotsView(1);
                     adapter.setData(articleList);
                     break;
             }
         }
     };
 
-    private void setDotsView()
-    {
-        dotsLine.removeAllViews();
-        for (int i = 0; i < articleList.size(); i++)
-        {
-            ImageView dot_iv = new ImageView(mContext);
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-            if (i == 0)
-            {
-                params.leftMargin = 0;
-            } else
-            {
-                params.leftMargin = 20;
-            }
-            dot_iv.setLayoutParams(params);
-            dots.add(dot_iv);
-            if (i == 0)
-            {
-                dots.get(i).setBackgroundResource(R.drawable.home_tips_foucs_icon);
-            } else
-
-            {
-                dots.get(i).setBackgroundResource(R.drawable.home_tips_icon);
-            }
-            dotsLine.addView(dot_iv);
-        }
-    }
 
     public static MagicImageDetailsFragment newInstance(String param, int string)
     {
@@ -173,16 +141,6 @@ public class MagicImageDetailsFragment extends BaseFragment
         titleTv = (TypeFaceTextView) view.findViewById(R.id.tv_title);
         titleTv.setText(mParam);
 
-        backBtn = (LinearLayout) view.findViewById(R.id.ll_back);
-        backBtn.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                ((BaseActivity) getActivity()).popToStack(MagicImageDetailsFragment.this);
-            }
-        });
-
         headerLine = (RelativeLayout) view.findViewById(R.id.headerLine);
         bottomLine = (RelativeLayout) view.findViewById(R.id.bottomLine);
         bottomLine.setOnClickListener(new View.OnClickListener()
@@ -190,9 +148,7 @@ public class MagicImageDetailsFragment extends BaseFragment
             @Override
             public void onClick(View v)
             {
-//                MagicDesignFragment magicDesignFragment = MagicDesignFragment.newInstance("", "");
-//                ((MainActivity) getActivity()).navigationToFragment(magicDesignFragment);
-                EaseUtils.startDesignerActivity(mContext);
+                EaseUtils.startKeFuActivity(mContext);
             }
         });
 
@@ -221,26 +177,18 @@ public class MagicImageDetailsFragment extends BaseFragment
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
             {
-                for (int j = 0; j < dots.size(); j++)
-                {
-                    if (j == position)
-                    {
-                        dots.get(j).setBackgroundResource(R.drawable.home_tips_foucs_icon);
-                    } else
-                    {
-                        dots.get(j).setBackgroundResource(R.drawable.home_tips_icon);
-                    }
-                }
+                setDotsView(position+1);
             }
-
             @Override
             public void onNothingSelected(AdapterView<?> parent)
             {
             }
         });
 
-        dotsLine = (LinearLayout) view.findViewById(R.id.dotsLine);
-        mRequestQueue = Volley.newRequestQueue(mContext);
+        currentTv = (TypeFaceTextView) view.findViewById(R.id.tv_currentPage);
+        totalTv = (TypeFaceTextView) view.findViewById(R.id.tv_totalPage);
+
+        mRequestQueue = ZDApplication.newRequestQueue();
 
         if (NetworkUtils.isNetworkAvailable(mContext))
         {
@@ -251,6 +199,12 @@ public class MagicImageDetailsFragment extends BaseFragment
             Toast.makeText(mContext, "抱歉,网络链接失败", Toast.LENGTH_SHORT).show();
         }
 
+    }
+
+    private void setDotsView(int pos)
+    {
+        currentTv.setText(""+pos);
+        totalTv.setText(""+articleList.size());
     }
 
     /**
@@ -285,7 +239,7 @@ public class MagicImageDetailsFragment extends BaseFragment
 
     private void FetchData()
     {
-        JsonObjectRequest jr = new JsonObjectRequest(ZhaiDou.MagicCImageDetailsUrl + mId, new Response.Listener<JSONObject>()
+        ZhaiDouRequest jr = new ZhaiDouRequest(ZhaiDou.MagicCImageDetailsUrl + mId, new Response.Listener<JSONObject>()
         {
             @Override
             public void onResponse(JSONObject response)
@@ -332,16 +286,7 @@ public class MagicImageDetailsFragment extends BaseFragment
                 }
                 ToolUtils.setToast(mContext, R.string.loading_fail_txt);
             }
-        })
-        {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError
-            {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                return headers;
-            }
-        };
+        });
         mRequestQueue.add(jr);
     }
 

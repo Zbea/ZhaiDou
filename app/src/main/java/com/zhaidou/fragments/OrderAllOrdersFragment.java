@@ -177,7 +177,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
                     final TextView btn2 = (TextView) parentV.findViewById(R.id.bt_received);
                     if (btn2.getTag() != null)
                         preTime = Long.parseLong(btn2.getTag().toString());
-                    OrderDetailFragment1 orderDetailFragment = OrderDetailFragment1.newInstance(order.orderCode, 2);
+                    OrderDetailFragment orderDetailFragment = OrderDetailFragment.newInstance(order.orderCode, 2);
                     ((BaseActivity) getActivity()).navigationToFragment(orderDetailFragment);
                 }
             });
@@ -367,6 +367,11 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
             public void onResponse(JSONObject jsonObject) {
                 if (mDialog != null) mDialog.dismiss();
                 isDataLoaded = false;
+                if (jsonObject==null)
+                {
+                    return;
+                }
+                ToolUtils.setLog(jsonObject.toString());
                 int status = jsonObject.optInt("status");
                 String message = jsonObject.optString("message");
                 int totalCount = jsonObject.optInt("totalCount");
@@ -434,7 +439,7 @@ public class OrderAllOrdersFragment extends BaseFragment implements View.OnClick
         @Override
         public View bindView(int position, View convertView, ViewGroup parent) {
             if (convertView == null)
-                convertView = mInflater.inflate(R.layout.item_order_return, null);
+                convertView = mInflater.inflate(R.layout.item_order_list, null);
             TextView tv_order_time = ViewHolder.get(convertView, R.id.tv_order_time);
             TextView tv_order_number = ViewHolder.get(convertView, R.id.tv_order_number);
             TextView tv_order_amount = ViewHolder.get(convertView, R.id.tv_order_amount);

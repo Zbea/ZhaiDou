@@ -12,18 +12,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
-import android.widget.FrameLayout;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
 import com.easemob.chat.EMChatManager;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.MainActivity;
@@ -49,9 +42,7 @@ import com.zhaidou.utils.ToolUtils;
 import org.json.JSONObject;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class MainPersonalFragment extends BaseFragment implements View.OnClickListener, CountManager.onCountChangeListener, ProfileManage.OnProfileChange, AccountManage.AccountListener, CountManager.onCommentChangeListener {
 
@@ -62,7 +53,6 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
     private String mParam2;
     private View view;
 
-    private RequestQueue mRequestQueue;
     private final int UPDATE_USER_INFO = 1;
     private final int UPDATE_USER_DESCRIPTION = 2;
     private final int UPDATE_USER_COLLECT_COUNT = 3;
@@ -74,14 +64,12 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
 
     private ProfileFragment mProfileFragment;
     private ImageView iv_header, mPrePayView, mPreReceivedView, mReturnView;
-    private TextView tv_nickname, tv_desc, tv_collect, tv_collocation, tv_unpay_count;
-    private RelativeLayout mCouponsView, mSettingView, mAllOrderView;
-    private FrameLayout mChildContainer;
+    private TextView tv_nickname, tv_desc, tv_unpay_count;
+    private RelativeLayout  mSettingView, mAllOrderView;
     private TextView mCartCount;
     private int userId;
     private String token;
     private int count = 0;
-    private int collectNum = 0;
 
     private GridView mGridView;
     private ShareAdapter mShareAdapter;
@@ -99,18 +87,10 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
                     SharedPreferencesUtil.saveData(mContext, "avatar", "http://" + mUser.getAvatar());
                     break;
                 case UPDATE_USER_DESCRIPTION:
+
                     SharedPreferencesUtil.saveData(mContext, "mobile", mUser.getMobile());
                     SharedPreferencesUtil.saveData(mContext, "description", mUser.getDescription());
                     tv_desc.setText("null".equalsIgnoreCase(mUser.getDescription()) || mUser.getDescription() == null ? "" : mUser.getDescription());
-                    break;
-                case UPDATE_USER_COLLECT_COUNT:
-                    collectNum = msg.arg1;
-                    ToolUtils.setLog("收藏" + msg.arg1);
-                    tv_collect.setText(msg.arg1 + "");
-                    break;
-                case UPDATE_USER_COLLOCATION:
-                    ToolUtils.setLog("豆搭：" + msg.arg1);
-                    tv_collocation.setText(msg.arg1 + "");
                     break;
                 case UPDATE_UNPAY_COUNT:
                     count = msg.arg1;
@@ -168,7 +148,6 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
             mPreReceivedView = (ImageView) view.findViewById(R.id.tv_pre_received);
             mReturnView = (ImageView) view.findViewById(R.id.tv_return);
             mAllOrderView = (RelativeLayout) view.findViewById(R.id.all_order);
-            mChildContainer = (FrameLayout) view.findViewById(R.id.fl_child_container);
 
             mSettingView = (RelativeLayout) view.findViewById(R.id.rl_setting);
             iv_header = (ImageView) view.findViewById(R.id.iv_header);
@@ -178,7 +157,7 @@ public class MainPersonalFragment extends BaseFragment implements View.OnClickLi
             mCartCount = (TextView) view.findViewById(R.id.tv_cart_count);
             unReadMsgView = (TextView) view.findViewById(R.id.unreadMsg);
             mGridView = (GridView) view.findViewById(R.id.gridView);
-mGridView.setFocusable(false);
+            mGridView.setFocusable(false);
 
             view.findViewById(R.id.accountInfoBtn).setOnClickListener(this);
             mPrePayView.setOnClickListener(this);
@@ -189,11 +168,11 @@ mGridView.setFocusable(false);
             view.findViewById(R.id.rl_addr_manage).setOnClickListener(this);
             view.findViewById(R.id.unreadMsgLayout).setOnClickListener(this);
 
-            mRequestQueue = Volley.newRequestQueue(getActivity());
-            getUserDetail();
-            getUserInfo();
             userId = (Integer) SharedPreferencesUtil.getData(getActivity(), "userId", -1);
             token = (String) SharedPreferencesUtil.getData(getActivity(), "token", "");
+            getUserDetail();
+            getUserInfo();
+
 
             int value = CountManager.getInstance().value(CountManager.TYPE.TAG_PREPAY);
             System.out.println("value = " + value);
@@ -205,8 +184,8 @@ mGridView.setFocusable(false);
             ProfileManage.getInstance().register(this);
             mUser = new User();
 
-            int[] drawableId = {R.drawable.icon_coupon, R.drawable.icon_softcover, R.drawable.icon_collocation,
-                    R.drawable.icon_pintie, R.drawable.icon_service, R.drawable.icon_contact};
+            int[] drawableId = {R.drawable.icon_account_coupon, R.drawable.icon_account_softcover, R.drawable.icon_account_collocation,
+                    R.drawable.icon_account_pintie, R.drawable.icon_account_service, R.drawable.icon_account_contact};
 
             String[] titlearr = {"优惠券", "软装方案", "我的豆搭", "拼贴大赛", "在线客服", "联系我们"};
             List<String> titleList = Arrays.asList(titlearr);
@@ -224,7 +203,7 @@ mGridView.setFocusable(false);
                             SharedPreferencesUtil.saveData(ZDApplication.getInstance(), "UnReadDesigner", 0);
                             mShareAdapter.notifyDataSetChanged();
                             CountManager.getInstance().notifyCommentChange();
-                            SoftcoverFragment softcoverFragment = SoftcoverFragment.newInstance("", "");
+                            MagicClassicCaseFragment softcoverFragment = MagicClassicCaseFragment.newInstance("", "",2);
                             ((BaseActivity) getActivity()).navigationToFragment(softcoverFragment);
                             break;
                         case 2:
@@ -302,9 +281,6 @@ mGridView.setFocusable(false);
                 ((BaseActivity) getActivity()).navigationToFragmentWithAnim(mProfileFragment);
                 break;
             case R.id.unreadMsgLayout:
-//                Intent intent1 = new Intent(getActivity(), ConversationListActivity.class);
-//                intent1.putExtra("userId", "service");
-//                startActivity(intent1);
                 ConversationListFragment conversationListFragment = new ConversationListFragment();
                 ((BaseActivity) mContext).navigationToFragment(conversationListFragment);
                 break;
@@ -312,10 +288,17 @@ mGridView.setFocusable(false);
     }
 
     public void getUserInfo() {
-        Object id = SharedPreferencesUtil.getData(getActivity(), "userId", 0);
-        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.USER_SIMPLE_PROFILE_URL + "?id=" + id, new Response.Listener<JSONObject>() {
+        int id = (Integer)SharedPreferencesUtil.getData(mContext, "userId", 0);
+        Api.getUserInfo(id,new Api.SuccessListener()
+        {
             @Override
-            public void onResponse(JSONObject jsonObject) {
+            public void onSuccess(Object object)
+            {
+                if (object==null)
+                {
+                    return;
+                }
+                JSONObject jsonObject= (JSONObject) object;
                 int status = jsonObject.optInt("status");
                 String msg = jsonObject.optString("message");
                 if (status == 200) {
@@ -330,14 +313,10 @@ mGridView.setFocusable(false);
                         String nick_name = userObj.optString("nick_name");
                         String province = userObj.optString("province");
                         String city = userObj.optString("city");
-                        //                    User user = new User();
                         mUser.setAvatar(avatar);
                         mUser.setNickName(nick_name);
                         mUser.setProvince(province);
                         mUser.setCity(city);
-                        Message message = new Message();
-//                    message.what = UPDATE_USER_INFO;
-//                    message.obj = user;
                         mHandler.sendEmptyMessage(UPDATE_USER_INFO);
                     }
 
@@ -345,26 +324,22 @@ mGridView.setFocusable(false);
                     ShowToast(msg);
                 }
             }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError volleyError) {
-            }
-        }) {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                return headers;
-            }
-        };
-        mRequestQueue.add(request);
+        },null);
     }
 
     public void getUserDetail() {
-        Object id = SharedPreferencesUtil.getData(mContext, "userId", 0);
-        JsonObjectRequest request = new JsonObjectRequest(ZhaiDou.USER_DETAIL_PROFILE_URL + "?id=" + id, new Response.Listener<JSONObject>() {
+        int id = (Integer)SharedPreferencesUtil.getData(mContext, "userId", 0);
+
+        Api.getUserDetail(id,new Api.SuccessListener()
+        {
             @Override
-            public void onResponse(JSONObject jsonObject) {
+            public void onSuccess(Object object)
+            {
+                if (object==null)
+                {
+                    return;
+                }
+                JSONObject jsonObject= (JSONObject) object;
                 int status = jsonObject.optInt("status");
                 String msg = jsonObject.optString("message");
                 if (status == 200) {
@@ -380,30 +355,14 @@ mGridView.setFocusable(false);
                         mUser.setMobile(mobile);
                         mUser.setDescription(description);
                         mUser.setVerified(verified);
-                        Message message = new Message();
-                        message.what = UPDATE_USER_DESCRIPTION;
-//                        message.obj = user;
                         mHandler.sendEmptyMessage(UPDATE_USER_DESCRIPTION);
                     }
 
                 } else {
                     ShowToast(msg);
                 }
-
             }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError volleyError) {
-            }
-        }) {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                return headers;
-            }
-        };
-        ((ZDApplication) getActivity().getApplication()).mRequestQueue.add(request);
+        },null);
     }
 
     public void refreshData(Activity activity) {
@@ -506,7 +465,7 @@ mGridView.setFocusable(false);
         @Override
         public View bindView(int position, View convertView, ViewGroup parent) {
             if (convertView == null)
-                convertView = mInflater.inflate(R.layout.item_share_view, null);
+                convertView = mInflater.inflate(R.layout.item_personal_view, null);
             ImageView imageView = ViewHolder.get(convertView, R.id.iv_plat);
             TextView textView = ViewHolder.get(convertView, R.id.tv_plat);
             ImageView mDotView = ViewHolder.get(convertView, R.id.dotView);

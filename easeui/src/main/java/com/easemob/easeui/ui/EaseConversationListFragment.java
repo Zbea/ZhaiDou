@@ -197,7 +197,6 @@ public class EaseConversationListFragment extends EaseBaseFragment {
     /**
      * 获取会话列表
      *
-     * @param context
      * @return +
      */
     protected List<EMConversation> loadConversationList() {
@@ -227,36 +226,34 @@ public class EaseConversationListFragment extends EaseBaseFragment {
             e.printStackTrace();
         }
         List<EMConversation> list = new ArrayList<EMConversation>();
-        if (sortList.size() == 0) {
-            list.add(new EMConversation("designer"));
-            list.add(new EMConversation("service"));
-        } else if (sortList.size() == 1) {
-            EMConversation second = sortList.get(0).second;
-            String userName = second.getUserName();
-            list.add(userName.equalsIgnoreCase("service") ? new EMConversation("designer") : second);
-            list.add(userName.equalsIgnoreCase("service") ? second : new EMConversation("service"));
-        } else if (sortList.size() == 2) {
-            EMConversation first = sortList.get(0).second;
-            if ("service".equalsIgnoreCase(first.getUserName())) {
-                list.add(sortList.get(1).second);
-                list.add(first);
-            } else {
-                list.add(sortList.get(0).second);
-                list.add(sortList.get(1).second);
-            }
-        }
-//		for (Pair<Long, EMConversation> sortItem : sortList) {
-//			list.add(sortItem.second);
-//		}
-        EMConversation comment = new EMConversation("comment");
-        list.add(0, comment);
+//        if (sortList.size() == 0) {
+//            list.add(new EMConversation("designer"));
+//            list.add(new EMConversation("service"));
+//        } else if (sortList.size() == 1) {
+//            EMConversation second = sortList.get(0).second;
+//            String userName = second.getUserName();
+//            list.add(userName.equalsIgnoreCase("service") ? new EMConversation("designer") : second);
+//            list.add(userName.equalsIgnoreCase("service") ? second : new EMConversation("service"));
+//        }
+//        else if (sortList.size() == 2) {
+//            EMConversation first = sortList.get(0).second;
+//            if ("service".equalsIgnoreCase(first.getUserName())) {
+//                list.add(sortList.get(1).second);
+//                list.add(first);
+//            }
+//            else {
+//                list.add(sortList.get(0).second);
+//                list.add(sortList.get(1).second);
+//            }
+//        }
+        list.add(0,  new EMConversation("comment"));
+        list.add(1,new EMConversation("service"));
         return list;
     }
 
     /**
      * 根据最后一条消息的时间排序
      *
-     * @param usernames
      */
     private void sortConversationByLastChatTime(List<Pair<Long, EMConversation>> conversationList) {
         Collections.sort(conversationList, new Comparator<Pair<Long, EMConversation>>() {

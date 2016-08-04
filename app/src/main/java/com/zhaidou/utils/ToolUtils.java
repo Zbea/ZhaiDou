@@ -416,7 +416,7 @@ public class ToolUtils
         {
             if (item.title.equals("天天刮奖"))
             {
-                Intent detailIntent = new Intent(mContext, HomeCompetitionActivity.class);
+                    Intent detailIntent = new Intent(mContext, HomeCompetitionActivity.class);
                 detailIntent.putExtra("url", item.typeValue);
                 detailIntent.putExtra("from", "lottery");
                 detailIntent.putExtra("title", "天天刮奖");
@@ -425,10 +425,10 @@ public class ToolUtils
             {
                 Intent intent = new Intent();
                 intent.putExtra("url", item.typeValue);
+                intent.putExtra("title", item.title);
+                intent.putExtra("imageUrl", item.imageUrl);
                 intent.setClass(mContext, WebViewActivity.class);
                 mContext.startActivity(intent);
-//                WebViewFragment webViewFragment= WebViewFragment.newInstance(item.typeValue, false);
-//                ((MainActivity)mContext).navigationToFragment(webViewFragment);
             }
         } else if (item.type == 2)
         {
@@ -480,7 +480,7 @@ public class ToolUtils
             ((BaseActivity) mContext).navigationToFragmentWithAnim(magicClassicCaseDetailsFragment);
         } else if (item.type == 11)
         {
-            MagicClassicCaseFragment magicClassicCaseFragment = MagicClassicCaseFragment.newInstance("", "");
+            MagicClassicCaseFragment magicClassicCaseFragment = MagicClassicCaseFragment.newInstance("", "",1);
             ((BaseActivity) mContext).navigationToFragment(magicClassicCaseFragment);
         } else if (item.type == 12)
         {

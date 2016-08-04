@@ -3,7 +3,6 @@ package com.zhaidou.activities;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -29,7 +28,6 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.R;
 import com.zhaidou.ZDApplication;
@@ -41,7 +39,6 @@ import com.zhaidou.model.User;
 import com.zhaidou.model.ZhaiDouRequest;
 import com.zhaidou.utils.DialogUtils;
 import com.zhaidou.utils.EaseUtils;
-import com.zhaidou.utils.NativeHttpUtil;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.CustomEditText;
@@ -157,7 +154,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
         mRegisterView = (TextView) findViewById(R.id.tv_register);
         mResetView = (TextView) findViewById(R.id.tv_reset_psw);
 
-        requestQueue = Volley.newRequestQueue(this);
+        requestQueue = ZDApplication.newRequestQueue();
         mLoginView.setOnClickListener(this);
         mRegisterView.setOnClickListener(this);
         mResetView.setOnClickListener(this);
@@ -230,7 +227,6 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                                     String email = userObj.optString("email");
                                     String nick = userObj.optString("nick_name");
                                     User user = new User(id, email, token, nick, null);
-//                                    loginToEaseServer(user);
                                     mRegisterOrLoginListener.onRegisterOrLoginSuccess(user, null);
                                 }
                             } else {
@@ -254,11 +250,11 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                 requestQueue.add(request);
                 break;
             case R.id.tv_register:
+
                 startActivityForResult(new Intent(LoginActivity.this, RegisterActivity.class), 200);
                 break;
             case R.id.tv_reset_psw:
-                Intent intent = new Intent(getApplicationContext(), AccountFindPwdActivity.class);
-                startActivity(intent);
+                startActivity(new Intent(getApplicationContext(), AccountFindPwdActivity.class));
                 break;
             case R.id.ll_back:
                 finish();
@@ -274,7 +270,6 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
             case R.id.ll_qq:
                 Platform qq = ShareSDK.getPlatform(QQ.NAME);
                 authorize(qq);
-                ToolUtils.setLog("开始qq注册");
                 break;
             case R.id.ll_weibo:
                 //新浪微博
@@ -312,12 +307,11 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                 Log.i("LoginActivity.thirdPartyVerify----jsonObject--->", jsonObject.toString());
                 JSONObject dataObj = jsonObject.optJSONObject("data");
                 int flag = dataObj.optInt("flag");
-
+                ToolUtils.setLog("flag:"+flag);
                 if (0 == flag) {
                     JSONObject login_user = dataObj.optJSONObject("user").optJSONObject("login_user");
                     String email = login_user.optString("s_email");
                     String nick1 = login_user.optString("s_nick_name");
-                    Log.i("0==flag", "0==flag");
                     Map<String, String> registers = new HashMap<String, String>();
                     registers.put("email", email);
                     registers.put("nick_name", nick1);
@@ -336,7 +330,6 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                         String email = user.optString("email");
                         validate_phone = user.optBoolean("validate_phone");
                         User u = new User(id, email, token, nick, null);
-                        Log.i("LoginFragment----onRegisterOrLoginSuccess---->", user.toString());
                         mRegisterOrLoginListener.onRegisterOrLoginSuccess(u, null);
                     }
                 }
@@ -348,9 +341,6 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
 
             }
         });
-        request.setRetryPolicy(new DefaultRetryPolicy(5000,
-                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
-                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         requestQueue.add(request);
     }
 
@@ -400,6 +390,7 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
                 Map<String, String> headers = new HashMap<String, String>();
                 headers.put("ZhaidouVesion", getApplicationContext().getResources().getString(R.string.app_versionName));
                 headers.put("SECAuthorization", token);
+                headers.put("zd-client", "ANDROID");
                 return headers;
             }
         };
@@ -421,7 +412,6 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
         } else {
             plat.SSOSetting(false);
         }
-        ToolUtils.setLog("注册");
         plat.showUser(null);
     }
 
@@ -497,35 +487,6 @@ public class LoginActivity extends FragmentActivity implements View.OnClickListe
 
     public void setRegisterOrLoginListener(RegisterFragment.RegisterOrLoginListener mRegisterOrLoginListener) {
         this.mRegisterOrLoginListener = mRegisterOrLoginListener;
-    }
-
-    private class RegisterTask extends AsyncTask<Map<String, String>, Void, String> {
-        @Override
-        protected String doInBackground(Map<String, String>... maps) {
-            String s = null;
-            try {
-                s = NativeHttpUtil.post(ZhaiDou.USER_REGISTER_URL, null, maps[0]);
-            } catch (Exception e) {
-                Log.i("e--->", e.getMessage());
-            }
-            return s;
-        }
-
-        @Override
-        protected void onPostExecute(String s) {
-            try {
-                JSONObject json = new JSONObject(s);
-                JSONObject userJson = json.optJSONObject("user");
-                int id = userJson.optInt("id");
-                String email = userJson.optString("email");
-                String token = userJson.optString("authentication_token");
-                String avatar = userJson.optJSONObject("avatar").optString("url");
-                String nick = userJson.optString("nick_name");
-                User user = new User(id, email, token, nick, avatar);
-                mRegisterOrLoginListener.onRegisterOrLoginSuccess(user, null);
-            } catch (Exception e) {
-            }
-        }
     }
 
     private void thirdPartyRegisterTask(Map<String, String> params) {

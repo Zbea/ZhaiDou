@@ -2,7 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
 
     <string name="app_name">宅豆</string>
-    <string name="app_versionName">3.3.1</string>
+    <string name="app_versionName">3.4.0</string>
     <string name="loading_fail_txt">抱歉,加载失败,请重试</string>
     <string name="net_fail_txt">抱歉,网络连接失败</string>
     <string name="phone_lose_txt">抱歉,无效手机号码</string>
@@ -24,7 +24,7 @@
     <string name="title_main_magic_diy">DIY搭配</string>
     <string name="home_shop_special_text">特卖商城</string>
     <string name="shop_taday_special_text">今日特卖</string>
-    <string name="shop_cart_text">特卖购物车</string>
+    <string name="shop_cart_text">购物车</string>
     <string name="shop_settlement_text">提交订单</string>
     <string name="shop_order_ok_text">确认订单信息</string>
     <string name="shop_payment_lj_text">立即支付</string>
@@ -32,6 +32,9 @@
     <string name="shop_payment_text">收银台</string>
     <string name="shop_payment_fail_text">支付失败</string>
     <string name="shop_payment_success_text">支付成功</string>
+
+    <string name="title_consult_design">咨询设计服务</string>
+    <string name="registration_protocol">轻触 \"注册\" 按钮,即表示你同意</string>
 
     <!-- 订单 -->
     <string name="order_colse">交易关闭</string>

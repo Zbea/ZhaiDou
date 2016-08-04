@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.zhaidou"
-    android:versionCode="51"
+    android:versionCode="52"
     android:versionName="@string/app_versionName" >
 
     <application
@@ -35,6 +35,7 @@
             android:name=".WelcomeGuidancePage"
             android:configChanges="orientation|keyboardHidden|"
             android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan|stateHidden"
             android:theme="@style/app_theme" >
         </activity>
 
@@ -83,7 +84,7 @@
             android:name="com.mob.tools.MobUIShell"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar"
+            android:theme="@android:style/Theme.NoTitleBar"
             android:windowSoftInputMode="stateHidden|adjustResize" >
             <intent-filter>
                 <data android:scheme="tencent1104167339" />
@@ -96,13 +97,10 @@
         </activity>
         <activity
             android:name=".activities.WebViewActivity"
+            android:hardwareAccelerated="true"
             android:label="@string/title_activity_web_view" >
         </activity>
-        <activity
-            android:name=".activities.CategoryActivity"
-            android:theme="@style/StyledIndicators"
-            android:label="@string/title_activity_search">
-        </activity>
+
         <activity
             android:name=".activities.LoginActivity"
             android:theme="@style/StyledIndicators"
@@ -117,15 +115,25 @@
             android:name=".activities.AccountRegisterSetPwdActivity"
             android:theme="@style/StyledIndicators">
         </activity>
+
         <activity
             android:name=".activities.AccountSetPwdActivity"
-            android:theme="@style/StyledIndicators">
+            android:screenOrientation="portrait"
+            android:theme="@style/StyledIndicators" >
         </activity>
         <activity
             android:name=".activities.AccountFindPwdActivity"
-            android:theme="@style/StyledIndicators">
+            android:screenOrientation="portrait"
+            android:theme="@style/StyledIndicators" >
         </activity>
-        <activity android:name=".alipay.PayDemoActivity">
+
+        <activity
+            android:name=".activities.WebViewNoBackActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/StyledIndicators" >
+        </activity>
+
+        <activity android:name=".alipay.PayDemoActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.DEFAULT"/>
@@ -137,18 +145,12 @@
         <activity android:name="com.alibaba.sdk.android.login.ui.QrLoginActivity"
             android:theme="@style/tae_sdk_login_qr_activity_style"/>
 
-        <!--<activity-->
-            <!--android:name="cn.sharesdk.demo.wxapi.WXEntryActivity"-->
-            <!--android:theme="@android:style/Theme.Translucent.NoTitleBar"-->
-            <!--android:configChanges="keyboardHidden|orientation|screenSize"-->
-            <!--android:exported="true"-->
-            <!--android:screenOrientation="portrait" />-->
         <activity
             android:name=".wxapi.WXEntryActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:exported="true"
             android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+            android:theme="@android:style/Theme.NoTitleBar" />
         <activity
             android:name="com.alipay.sdk.app.H5PayActivity"
             android:configChanges="orientation|keyboardHidden|navigation"
@@ -389,6 +391,10 @@
                 <action android:name="com.xiaomi.mipush.ERROR" />
             </intent-filter>
         </receiver>
+        <activity
+            android:name=".activities.PhotoViewActivity"
+            android:label="@string/title_activity_photo_view" >
+        </activity>
     </application>
 
     <uses-permission android:name="android.permission.VIBRATE" />
@@ -409,8 +415,6 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_INTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <uses-permission android:name="android.permission.MANAGE_ACCOUNTS" />
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />

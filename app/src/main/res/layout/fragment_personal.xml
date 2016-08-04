@@ -20,7 +20,7 @@
                 android:layout_centerVertical="true"
                 android:scaleType="fitXY"
                 android:layout_marginRight="10dp"
-                android:src="@drawable/icon_setting"/>
+                android:src="@drawable/icon_account_setting"/>
             </RelativeLayout>
         <LinearLayout
             android:layout_below="@id/rl_header_layout"

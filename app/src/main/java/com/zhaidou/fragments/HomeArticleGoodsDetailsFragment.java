@@ -3,14 +3,15 @@ package com.zhaidou.fragments;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
+import android.webkit.WebSettings;
 import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -19,28 +20,25 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.R;
 import com.zhaidou.ZDApplication;
 import com.zhaidou.ZhaiDou;
 import com.zhaidou.activities.LoginActivity;
 import com.zhaidou.activities.WebViewActivity;
+import com.zhaidou.adapter.ArticleGoodsAdapter;
 import com.zhaidou.adapter.CommentAdapter;
 import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
-import com.zhaidou.base.BaseListAdapter;
-import com.zhaidou.base.ViewHolder;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.CartGoodsItem;
 import com.zhaidou.model.Comment;
+import com.zhaidou.model.ZhaiDouRequest;
 import com.zhaidou.utils.Api;
+import com.zhaidou.utils.DeviceUtils;
 import com.zhaidou.utils.DialogUtils;
 import com.zhaidou.utils.EaseUtils;
 import com.zhaidou.utils.NetworkUtils;
@@ -54,45 +52,44 @@ import com.zhaidou.view.ListViewForScrollView;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.lang.reflect.InvocationTargetException;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.WeakHashMap;
 
 import cn.sharesdk.framework.Platform;
 import cn.sharesdk.framework.PlatformActionListener;
 
 /**
- * 文章商品
+ * 文章专题商品
  */
 public class HomeArticleGoodsDetailsFragment extends BaseFragment
 {
     private static final String ARG_PARAM = "param";
     private static final String ARG_STRING = "string";
+    private static final String ARG_FLAGS = "flags";
 
     private String mParam;
     private String mString;
+    private int mFlags;//1方案详情2软装方案详情
     private View view;
-    private RelativeLayout barLine;
+    private RelativeLayout barLine,rl_video;
     private CircleImageView headerImageIv;
-    private ImageView backIv,shareIv, goodsIv, imageIv, commentIv;
-    private CustomProgressWebview webview;
+    private ImageView backIv,shareIv, goodsIv, imageIv, commentIv,iv_videoImage;
+    private CustomProgressWebview webview,wb_video;
     private ListViewForScrollView goodsListView, commentListView;
     private LinearLayout loadingView, nullNetView, nullView, nullDataView;
     private TextView reloadBtn, reloadNetBtn;
     private LinearLayout contactQQ;
     private RelativeLayout detailsTopLine;
     private TextView headerTopTv, headerNameTv,titleTv, areaTypeTv, areasTv, styleTv, budgetTv, nullGoods, nullComment, subtotalTv, commentNumTv;
-    private LinearLayout totalLine, goodsAllBtn, commentAllLine, commentAllBtn;
+    private LinearLayout ll_videoPage,totalLine, goodsAllBtn, ll_commentPage,commentAllLine, commentAllBtn,commentLine,ll_contact;
     private FrameLayout frameLayout;
-    private LinearLayout commentLine;
 
-    private WeakHashMap<Integer, View> mHashMap = new WeakHashMap<Integer, View>();
     private CustomScrollView mScrollView;
-    private GoodsAdapter articleShoppingAdapter;
+    private ArticleGoodsAdapter articleShoppingAdapter;
 
     private Dialog mDialog;
     private DialogUtils mDialogUtil;
@@ -107,7 +104,7 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
     private int page = 1;
     private int pageSize;
     private int commentCount=0;
-    private String imageUrl,header,headerName,title, introduce, areaType, areaSize, style, budget, totalPrice;
+    private String imageUrl,header,headerName,title, introduce, areaType, areaSize, style, budget, totalPrice,videoUrl,vid,vImage,shareName;
     private List<CartGoodsItem> items = new ArrayList<CartGoodsItem>();
     private AlphaAnimation alphaAnimation;
     private List<Comment> comments = new ArrayList<Comment>();
@@ -128,6 +125,20 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
                 budgetTv.setText(budget);
                 subtotalTv.setText("￥" + ToolUtils.isIntPrice(totalPrice));
 
+                ll_videoPage.setVisibility(TextUtils.isEmpty(videoUrl)?View.GONE:View.VISIBLE);
+                String url;
+                if (!TextUtils.isEmpty(vid))
+                {
+                    url="http://player.youku.com/embed/"+vid+"?client_id=814e6ba73e9be572";
+                    wb_video.loadUrl(url);
+                }
+                else
+                {
+                    wb_video.setVisibility(View.GONE);
+                    iv_videoImage.setVisibility(View.VISIBLE);
+                }
+
+                ToolUtils.setImageCacheUrl(vImage, iv_videoImage, R.drawable.icon_loading_item);
                 ToolUtils.setImageCacheUrl(header, headerImageIv, R.drawable.icon_loading_item);
                 ToolUtils.setImageCacheUrl(imageUrl, imageIv, R.drawable.icon_loading_item);
 
@@ -157,26 +168,12 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
         }
     };
 
-    public static HomeArticleGoodsDetailsFragment newInstance(String param, String string)
-    {
-        HomeArticleGoodsDetailsFragment fragment = new HomeArticleGoodsDetailsFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM, param);
-        args.putString(ARG_STRING, string);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    public HomeArticleGoodsDetailsFragment()
-    {
-    }
-
     private View.OnClickListener onClickListener = new View.OnClickListener()
     {
         @Override
         public void onClick(View view)
         {
-            GoodsArticleListFragment goodsArticleListFragment = GoodsArticleListFragment.newInstance(title, mString);
+            GoodsArticleListFragment goodsArticleListFragment = GoodsArticleListFragment.newInstance(mFlags, mString);
             CommentListFragment commentListFragment = CommentListFragment.newInstance(title, mString);
             commentListFragment.setOnCommentListener(new CommentListFragment.OnCommentListener()
             {
@@ -184,14 +181,14 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
                 public void GetComments(List<Comment> comments1,int num)
                 {
                     if (comments1!=null&&comments1.size()>0)
-                    if (comments!=comments1)
-                    {
-                        comments.clear();
-                        comments.addAll(comments1);
-                        commentAdapter.upDate(comments);
-                        nullComment.setVisibility(comments.size() > 0 ? View.GONE : View.VISIBLE);
-                        commentAllLine.setVisibility(comments.size() > 0 ? View.VISIBLE : View.GONE);
-                    }
+                        if (comments!=comments1)
+                        {
+                            comments.clear();
+                            comments.addAll(comments1);
+                            commentAdapter.upDate(comments);
+                            nullComment.setVisibility(comments.size() > 0 ? View.GONE : View.VISIBLE);
+                            commentAllLine.setVisibility(comments.size() > 0 ? View.VISIBLE : View.GONE);
+                        }
                     if (commentCount!=num)
                     {
                         commentCount=num;
@@ -207,8 +204,8 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
                 case R.id.netReload:
                     initData();
                     break;
-                case R.id.rl_qq_contact:
-                    EaseUtils.startDesignerActivity(mContext);
+                case R.id.ll_contact:
+                    EaseUtils.startKeFuActivity(mContext);
                     break;
                 case R.id.share_iv:
                     share();
@@ -224,6 +221,24 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
                     break;
                 case R.id.detailsCommentAllTv:
                     ((BaseActivity) mContext).navigationToFragment(commentListFragment);
+                    break;
+                case R.id.rl_video:
+                    Intent video = new Intent();
+                    String url=null;
+                    if (!TextUtils.isEmpty(vid))
+                    {
+                        url="http://player.youku.com/embed/"+vid+"?client_id=814e6ba73e9be572";
+                    }
+                    else
+                    {
+                        url=videoUrl;
+                    }
+                    video.putExtra("url", url);
+                    video.putExtra("title", shareName);
+                    video.putExtra("imageUrl", vImage);
+                    video.putExtra("canShare", true);
+                    video.setClass(mContext, WebViewActivity.class);
+                    mContext.startActivity(video);
                     break;
                 case R.id.commentEditLine:
                     if (checkLogin())
@@ -260,6 +275,24 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
     };
 
 
+
+
+    public static HomeArticleGoodsDetailsFragment newInstance(String param, String string,int flags)
+    {
+        HomeArticleGoodsDetailsFragment fragment = new HomeArticleGoodsDetailsFragment();
+        Bundle args = new Bundle();
+        args.putString(ARG_PARAM, param);
+        args.putString(ARG_STRING, string);
+        args.putInt(ARG_FLAGS, flags);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    public HomeArticleGoodsDetailsFragment()
+    {
+    }
+
+
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
@@ -268,6 +301,7 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
         {
             mParam = getArguments().getString(ARG_PARAM);
             mString = getArguments().getString(ARG_STRING);
+            mFlags= getArguments().getInt(ARG_FLAGS);
         }
     }
 
@@ -337,10 +371,37 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
         styleTv = (TextView) view.findViewById(R.id.detailsStyleTv);
         budgetTv = (TextView) view.findViewById(R.id.detailsBudgetTv);
         subtotalTv = (TextView) view.findViewById(R.id.detailsSubtotalTv);
+
+        rl_video= (RelativeLayout) view.findViewById(R.id.rl_video);
+        rl_video.setOnClickListener(onClickListener);
+        iv_videoImage= (ImageView) view.findViewById(R.id.iv_videoImage);
+        LinearLayout.LayoutParams layoutParams=new LinearLayout.LayoutParams(screenWidth- DeviceUtils.dp2px(mContext,20),(screenWidth- DeviceUtils.dp2px(mContext,20))*9/16);
+        layoutParams.topMargin=DeviceUtils.dp2px(mContext,20);
+        layoutParams.leftMargin=DeviceUtils.dp2px(mContext,10);
+        layoutParams.rightMargin=DeviceUtils.dp2px(mContext,10);
+        layoutParams.bottomMargin=DeviceUtils.dp2px(mContext,20);
+        rl_video.setLayoutParams(layoutParams);
+        ll_videoPage = (LinearLayout) view.findViewById(R.id.ll_videoPage);
+        wb_video=(CustomProgressWebview) view.findViewById(R.id.wb_video);
+        WebSettings webSettings = wb_video.getSettings();
+        webSettings.setJavaScriptEnabled(true);
+        webSettings.setPluginState(WebSettings.PluginState.ON);
+        webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
+        webSettings.setAllowFileAccess(true);
+        webSettings.setDomStorageEnabled(true);
+        webSettings.setUseWideViewPort(true);
+        webSettings.setLoadWithOverviewMode(true);
+        webSettings.setCacheMode(WebSettings.LOAD_DEFAULT);
+        // 开启 DOM storage API 功能
+        webSettings.setDomStorageEnabled(true);
+        //开启 database storage API 功能
+        webSettings.setDatabaseEnabled(true);
+
         commentNumTv = (TextView) view.findViewById(R.id.detailsCommentNumTv);
         totalLine = (LinearLayout) view.findViewById(R.id.detailsTotalLine);
         goodsAllBtn = (LinearLayout) view.findViewById(R.id.detailsGoodsAllTv);
         goodsAllBtn.setOnClickListener(onClickListener);
+        ll_commentPage= (LinearLayout) view.findViewById(R.id.ll_commentPage);
         commentAllLine = (LinearLayout) view.findViewById(R.id.detailsCommentAllLine);
         commentAllBtn = (LinearLayout) view.findViewById(R.id.detailsCommentAllTv);
         commentAllBtn.setOnClickListener(onClickListener);
@@ -381,7 +442,7 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
         });
         goodsListView = (ListViewForScrollView) view.findViewById(R.id.homeItemList);
         goodsListView.setEmptyView(mEmptyView);
-        articleShoppingAdapter = new GoodsAdapter(mContext, items);
+        articleShoppingAdapter = new ArticleGoodsAdapter(mContext, items);
         goodsListView.setAdapter(articleShoppingAdapter);
         goodsListView.setOnItemClickListener(new AdapterView.OnItemClickListener()
         {
@@ -473,11 +534,25 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
 
         frameLayout = (FrameLayout) view.findViewById(R.id.frameLayout);
 
-        contactQQ = (LinearLayout) view.findViewById(R.id.detailsContactLine);
-        contactQQ.setOnClickListener(onClickListener);
-        mRequestQueue = Volley.newRequestQueue(mContext);
+        ll_contact = (LinearLayout) view.findViewById(R.id.ll_contact);
+        ll_contact.setOnClickListener(onClickListener);
+        mRequestQueue = ZDApplication.newRequestQueue();
 
 
+        if (mFlags==2)
+        {
+            commentIv.setVisibility(View.GONE);
+            ll_contact.setVisibility(View.VISIBLE);
+            commentLine.setVisibility(View.GONE);
+            ll_commentPage.setVisibility(View.GONE);
+        }
+        else
+        {
+            commentIv.setVisibility(View.VISIBLE);
+            ll_contact.setVisibility(View.GONE);
+            commentLine.setVisibility(View.VISIBLE);
+            ll_commentPage.setVisibility(View.VISIBLE);
+        }
         initData();
 
     }
@@ -498,7 +573,10 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
         {
             mDialog = CustomLoadingDialog.setLoadingDialog(mContext, "loading");
             FetchData();
-            FetchCommentData();
+            if (mFlags==1)
+            {
+                FetchCommentData();
+            }
         } else
         {
             Toast.makeText(mContext, "抱歉,网络链接失败", Toast.LENGTH_SHORT).show();
@@ -514,7 +592,7 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
     {
         mDialogUtil = new DialogUtils(mContext);
         String shareUrl=ZhaiDou.HOME_BASE_WAP_URL+"case_item.html?caseId="+mString;
-        mDialogUtil.showShareDialog(mParam, mParam + "  " + shareUrl, imageUrl != null ?imageUrl : null, shareUrl, new PlatformActionListener() {
+        mDialogUtil.showShareDialog(TextUtils.isEmpty(shareName)?title:shareName,shareUrl, imageUrl != null ?imageUrl : null, shareUrl, new PlatformActionListener() {
             @Override
             public void onComplete(Platform platform, int i, HashMap<String, Object> stringObjectHashMap) {
                 Message message = handler.obtainMessage(UPDATE_SHARE_TOAST, mContext.getString(R.string.share_completed));
@@ -563,8 +641,8 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
 
     public void FetchData()
     {
-        String url = ZhaiDou.HomeArticleGoodsDetailsUrl + mString;
-        JsonObjectRequest request = new JsonObjectRequest(url,
+        String url = (mFlags==1?ZhaiDou.HomeArticleGoodsDetailsUrl:ZhaiDou.HomeSofeListDetailUrl) + mString;
+        ZhaiDouRequest request = new ZhaiDouRequest(url,
                 new Response.Listener<JSONObject>()
                 {
                     @Override
@@ -597,7 +675,7 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
                             DecimalFormat df=new DecimalFormat("#.00");
                             totalPrice=df.format(aDouble);
 
-                            JSONObject jsonObject = jsonObject1.optJSONObject("freeClassicsCasePO");
+                            JSONObject jsonObject = jsonObject1.optJSONObject(mFlags==1?"freeClassicsCasePO":"designerListPO");
                             String id = jsonObject.optString("id");
                             title = jsonObject.optString("caseName");
                             long startTime = jsonObject.optLong("updateTime");
@@ -607,12 +685,16 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
                             areaSize = jsonObject.optString("areaSize");
                             style = jsonObject.optString("style");
                             budget = jsonObject.optString("budget");
+                            videoUrl = jsonObject.optString("videoUrl");
+                            vid = jsonObject.optString("vid");
+                            vImage = jsonObject.optString("vImage");
+                            shareName = jsonObject.optString("shareName");
 
                             JSONObject jsonObject2 = jsonObject1.optJSONObject("designerUserPO");
                             header = jsonObject2.optString("imageUrl");
                             headerName = jsonObject2.optString("name");
 
-                            JSONArray jsonArray = jsonObject1.optJSONArray("changeCaseProductPOs");
+                            JSONArray jsonArray = jsonObject1.optJSONArray(mFlags==1?"changeCaseProductPOs":"designerListProductPOs");
                             if (jsonArray != null)
                                 for (int i = 0; i < jsonArray.length(); i++)
                                 {
@@ -672,25 +754,15 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
                     ToolUtils.setToast(mContext, R.string.loading_fail_txt);
                 }
             }
-        }
-        )
-        {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError
-            {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                return headers;
-            }
-        };
-        ZDApplication.mRequestQueue.add(request);
+        });
+        mRequestQueue.add(request);
     }
 
     public void FetchCommentData()
     {
         String url = ZhaiDou.HomeArticleCommentUrl + mString + "&pageNo=" + page + "&pageSize=15";
         ToolUtils.setLog(url);
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url,
+        ZhaiDouRequest request = new ZhaiDouRequest(url,
                 new Response.Listener<JSONObject>()
                 {
                     @Override
@@ -790,15 +862,15 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
                                             e.printStackTrace();
                                         }
 
-                                        comment.idReply = reCommentid;
-                                        comment.timeReply = reCommentCreateTime;
-                                        comment.commentReply = reCommentTitle;
-                                        comment.imagesReply = reCommentImgs;
-                                        comment.typeReply = reCommentType;
-                                        comment.statusReply = reCommentStatus;
-                                        comment.userNameReply=reCommentUserName;
-                                        comment.userImageReply=reCommentUserImg;
-                                        comment.userIdReply=reCommentUserId;
+                                        comment.idFormer = reCommentid;
+                                        comment.timeFormer = reCommentCreateTime;
+                                        comment.commentFormer = reCommentTitle;
+                                        comment.imagesFormer = reCommentImgs;
+                                        comment.typeFormer = reCommentType;
+                                        comment.statusFormer = reCommentStatus;
+                                        comment.userNameFormer =reCommentUserName;
+                                        comment.userImageFormer =reCommentUserImg;
+                                        comment.userIdFormer =reCommentUserId;
                                     }
                                     comments.add(comment);
                                 }
@@ -820,75 +892,10 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
                 }
                 ToolUtils.setToast(mContext, "抱歉,评论加载失败");
             }
-        }
-        )
-        {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError
-            {
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.put("ZhaidouVesion", mContext.getResources().getString(R.string.app_versionName));
-                return headers;
-            }
-        };
-        ZDApplication.mRequestQueue.add(request);
+        });
+        mRequestQueue.add(request);
     }
 
-
-    public class GoodsAdapter extends BaseListAdapter<CartGoodsItem>
-    {
-        Context context;
-
-        public GoodsAdapter(Context context, List<CartGoodsItem> list)
-        {
-            super(context, list);
-            this.context = context;
-        }
-
-        @Override
-        public View bindView(final int position, View convertView, ViewGroup parent)
-        {
-//            convertView = mHashMap.get(position);
-
-            if (convertView == null)
-                convertView = mInflater.inflate(R.layout.item_article_goods, null);
-
-            TextView goodsNameTv = ViewHolder.get(convertView, R.id.goodsNameTv);
-            TextView goodsSizeTv = ViewHolder.get(convertView, R.id.goodsSizeTv);
-            ImageView goodsImageTv = ViewHolder.get(convertView, R.id.goodsImageTv);
-            TextView goodsPriceTv = ViewHolder.get(convertView, R.id.goodsPriceTv);
-            TextView goodsNumTv = ViewHolder.get(convertView, R.id.goodsNumTv);
-            TextView goodsTypeTv = ViewHolder.get(convertView, R.id.goodsTypeTv);
-            TextView goodsBuyTv = ViewHolder.get(convertView, R.id.goodsBuyTv);
-
-            final CartGoodsItem goodsItem = getList().get(position);
-            goodsNameTv.setText(goodsItem.name);
-            goodsSizeTv.setText(goodsItem.size);
-            goodsNumTv.setText("X" + goodsItem.num);
-            goodsPriceTv.setText("￥" +ToolUtils.isIntPrice(goodsItem.currentPrice+"") );
-            ToolUtils.setImageCacheUrl(goodsItem.imageUrl, goodsImageTv, R.drawable.icon_loading_defalut);
-
-            if (goodsItem.storeId.equals("T"))
-            {
-                goodsTypeTv.setText("淘宝");
-                goodsTypeTv.setTextColor(Color.parseColor("#FD783A"));
-            } else if (goodsItem.storeId.equals("M"))
-            {
-                goodsTypeTv.setText("天猫");
-                goodsTypeTv.setTextColor(Color.parseColor("#ff6262"));
-            } else if (goodsItem.storeId.equals("J"))
-            {
-                goodsTypeTv.setText("京东");
-                goodsTypeTv.setTextColor(Color.parseColor("#ff6262"));
-            } else
-            {
-                goodsTypeTv.setText("宅豆");
-                goodsTypeTv.setTextColor(getResources().getColor(R.color.green_color));
-            }
-//            mHashMap.put(position, convertView);
-            return convertView;
-        }
-    }
 
     private OnCommentListener onCommentListener;
 
@@ -908,6 +915,19 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
     {
         super.onResume();
         MobclickAgent.onPageStart("案例详情");
+        try
+        {
+            wb_video.getClass().getMethod("onResume").invoke(wb_video,(Object[])null);
+        } catch (IllegalAccessException e)
+        {
+            e.printStackTrace();
+        } catch (InvocationTargetException e)
+        {
+            e.printStackTrace();
+        } catch (NoSuchMethodException e)
+        {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -915,6 +935,19 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
     {
         super.onPause();
         MobclickAgent.onPageEnd("案例详情");
+        try
+        {
+            wb_video.getClass().getMethod("onPause").invoke(wb_video,(Object[])null);
+        } catch (IllegalAccessException e)
+        {
+            e.printStackTrace();
+        } catch (InvocationTargetException e)
+        {
+            e.printStackTrace();
+        } catch (NoSuchMethodException e)
+        {
+            e.printStackTrace();
+        }
     }
 
     @Override

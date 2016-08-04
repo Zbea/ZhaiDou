@@ -1,5 +1,5 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:id="@+id/home_layout"
+                android:id="@+id/main_goods"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@color/page_bg"
@@ -37,8 +37,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
-                android:text="旅行收纳"
-                android:textColor="#aa666666"
+                android:text=""
+                android:textColor="@color/edit_hint_gray"
                 android:layout_marginLeft="10dp"
                 android:gravity="center"
                 android:drawableLeft="@drawable/icon_search_gray"
@@ -60,7 +60,7 @@
                 android:layout_width="50dp"
                 android:layout_height="match_parent"
                 android:padding="14dp"
-                android:src="@drawable/icon_goods_message"/>
+                android:src="@drawable/icon_message_black"/>
 
             <com.zhaidou.view.TypeFaceTextView
                 android:id="@+id/unreadMsg"
