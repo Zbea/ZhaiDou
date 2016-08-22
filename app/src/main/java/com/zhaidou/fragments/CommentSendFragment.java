@@ -50,16 +50,18 @@ import java.util.Map;
 
 
 /**
- * Created by roy on 15/8/28.
+ * Created by Zbea on 15/8/28.
  */
 public class CommentSendFragment extends BaseFragment
 {
     private static final String DATA = "page";
     private static final String INDEX = "index";
     private static final String COMMENT = "comment";
+    private static final String FLAGS = "flags";
 
     private String mPage;
     private String mIndex;
+    private int mFlags;//1回复当前人，2回复原来的人
     private Comment mComment,comment;
     private int mCommentId;
     private String mCommentContent;
@@ -68,6 +70,7 @@ public class CommentSendFragment extends BaseFragment
     private String mCommentUserName;
     private String mCommentUserImage;
     private int mCommentUserId;
+    private int mCommentDesigner;
 
     private Dialog mDialog;
     private final static int REFRESH_COMMIT_SUCCESS=0;//刷新列表
@@ -137,11 +140,12 @@ public class CommentSendFragment extends BaseFragment
                                         }
                                         int commentUserId=commentJsonObject.optInt("commentUserId");
                                         String commentUserName=commentJsonObject.optString("commentUserName");
-                                        String commentUserImg=(String)SharedPreferencesUtil.getData(mContext,"avatar","");
+                                        String commentUserImg=commentJsonObject.optString("commentUserImg");
                                         String articleId=commentJsonObject.optString("articleId");
                                         String articleTitle=commentJsonObject.optString("articleTitle");
                                         String commentType=commentJsonObject.optString("commentType");
                                         String commentStatus=commentJsonObject.optString("status");
+                                        int commentDesigner=commentJsonObject.optInt("isDesigner");
                                         String commentCreateTime= "";
                                         try
                                         {
@@ -150,38 +154,22 @@ public class CommentSendFragment extends BaseFragment
                                         {
                                             e.printStackTrace();
                                         }
-                                        ToolUtils.setLog(""+commentImgs.size());
                                         comment=new Comment();
-                                        if (mComment==null)
-                                        {
-                                            comment.articleId=articleId;
-                                            comment.articleTitle=articleTitle;
-                                            comment.id=commentid;
-                                            comment.time=commentCreateTime;
-                                            comment.comment=commentTitle;
-                                            comment.images=commentImgs;
-                                            comment.type=commentType;
-                                            comment.status=commentStatus;
-                                            comment.userName=commentUserName;
-                                            comment.userImage=commentUserImg;
-                                            comment.userId=commentUserId;
-                                        }
-                                        else
-                                        {
-                                            //将返回的信息当初回复信息
-                                            comment.id=commentid;
-                                            comment.time=commentCreateTime;
-                                            comment.comment=commentTitle;
-                                            comment.images=commentImgs;
-                                            comment.type=commentType;
-                                            comment.status=commentStatus;
-                                            comment.userName=commentUserName;
-                                            comment.userImage=commentUserImg;
-                                            comment.userId=commentUserId;
+                                        comment.articleId=articleId;
+                                        comment.articleTitle=articleTitle;
+                                        comment.id=commentid;
+                                        comment.time=commentCreateTime;
+                                        comment.comment=commentTitle;
+                                        comment.images=commentImgs;
+                                        comment.type=commentType;
+                                        comment.status=commentStatus;
+                                        comment.userName=commentUserName;
+                                        comment.userImage=commentUserImg;
+                                        comment.userId=commentUserId;
+                                        comment.isDesigner=commentDesigner;
 
-                                            comment.articleId=mIndex;
-                                            comment.articleTitle=mPage;
-
+                                        if (mComment!=null)
+                                        {
                                             comment.idFormer =mCommentId;
                                             comment.timeFormer =mCommentTime;
                                             comment.commentFormer =mCommentContent;
@@ -191,7 +179,7 @@ public class CommentSendFragment extends BaseFragment
                                             comment.userIdFormer =mCommentUserId;
                                             comment.userNameFormer =mCommentUserName;
                                             comment.userImageFormer =mCommentUserImage;
-
+                                            comment.isDesignerFormer =mCommentDesigner;
                                         }
                                         onCommentListener.onCommentResult(comment);
                                         ((BaseActivity) getActivity()).popToStack(CommentSendFragment.this);
@@ -251,12 +239,13 @@ public class CommentSendFragment extends BaseFragment
         }
     };
 
-    public static CommentSendFragment newInstance(String page, String index,Comment comment)
+    public static CommentSendFragment newInstance(String page, String index,Comment comment,int flags)
     {
         CommentSendFragment fragment = new CommentSendFragment();
         Bundle args = new Bundle();
         args.putString(DATA, page);
         args.putString(INDEX, index);
+        args.putInt(FLAGS, flags);
         args.putSerializable(COMMENT, comment);
         fragment.setArguments(args);
         return fragment;
@@ -274,6 +263,7 @@ public class CommentSendFragment extends BaseFragment
         {
             mPage = getArguments().getString(DATA);
             mIndex = getArguments().getString(INDEX);
+            mFlags = getArguments().getInt(FLAGS);
             mComment = (Comment) getArguments().getSerializable(COMMENT);
         }
     }
@@ -305,13 +295,14 @@ public class CommentSendFragment extends BaseFragment
     {
         if (mComment!=null)
         {
-            mCommentId=mComment.id;
-            mCommentContent=mComment.comment;
-            mCommentImages=mComment.images;
-            mCommentUserName=mComment.userName;
-            mCommentUserImage=mComment.userImage;
-            mCommentUserId=mComment.userId;
-            mCommentTime=mComment.time;
+            mCommentId=mFlags==1?mComment.id:mComment.idFormer;
+            mCommentContent=mFlags==1?mComment.comment:mComment.commentFormer;
+            mCommentImages=mFlags==1?mComment.images:mComment.imagesFormer;
+            mCommentUserName=mFlags==1?mComment.userName:mComment.userNameFormer;
+            mCommentUserImage=mFlags==1?mComment.userImage:mComment.userImageFormer;
+            mCommentUserId=mFlags==1?mComment.userId:mComment.userIdFormer;
+            mCommentTime=mFlags==1?mComment.time:mComment.timeFormer;
+            mCommentDesigner=mFlags==1?mComment.isDesigner:mComment.isDesignerFormer;
         }
         inputMethodManagers=(InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
 
@@ -325,6 +316,10 @@ public class CommentSendFragment extends BaseFragment
         sentTv.setClickable(false);
 
         editText=(TypeFaceEditText)mView.findViewById(R.id.comment_edit);
+        if (mComment!=null)
+        {
+            editText.setHint("回复:"+mCommentUserName);
+        }
         editText.addTextChangedListener(new TextWatcher()
         {
             @Override

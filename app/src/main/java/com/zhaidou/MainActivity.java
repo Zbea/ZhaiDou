@@ -120,7 +120,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
     private final int WX_PAY_SUCCESS = 0;
     private final int WX_PAY_FAILED = -1;
     private final int WX_PAY_CANCEL = -2;
-    private  List<Province> provinceList=new ArrayList<Province>();
+    private  static List<Province> provinceList=new ArrayList<Province>();
 
     public int num = 0;
     public int cartCount = 0;
@@ -296,9 +296,9 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
             @Override
             public void onClick(View view)
             {
-
                 selectFragment(currentFragment, utilityFragment);
                 setButton(view);
+                MobclickAgent.onEvent(mContext,"main_home");
             }
         });
 
@@ -314,6 +314,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
                 }
                 selectFragment(currentFragment, magicHomeFragment);
                 setButton(view);
+                MobclickAgent.onEvent(mContext,"main_magic");
 
             }
         });
@@ -324,6 +325,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
             @Override
             public void onClick(View view)
             {
+                MobclickAgent.onEvent(mContext,"main_good");
                 gotoCategory();
 
             }
@@ -531,7 +533,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
      * 得到预加载的城市
      * @return
      */
-    public List<Province> getAddressCity()
+    public static List<Province> getAddressCity()
     {
         return provinceList;
     }
@@ -540,7 +542,7 @@ public class MainActivity extends BaseActivity implements DiyFragment.OnFragment
      * 设置加载城市
      * @param provinces
      */
-    public void setAddressCity(List<Province> provinces)
+    public static void setAddressCity(List<Province> provinces)
     {
         provinceList=provinces;
     }

@@ -53,6 +53,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class MainHomeFragment extends BaseFragment implements View.OnClickListener,
@@ -138,6 +139,10 @@ public class MainHomeFragment extends BaseFragment implements View.OnClickListen
                     SwitchImage item = banners.get(postion);
                     ToolUtils.setBannerGoto(item, mContext);
                     FetchClickStatisticalData(item.title,item.typeValue,item.type,postion);
+                    HashMap<String,String> map = new HashMap<String,String>();
+                    map.put("type",item.type+"");
+                    map.put("title",item.title);
+                    MobclickAgent.onEvent(mContext, "home_banner", map);
                 }
             });
             linearLayout.addView(customBannerView);
@@ -175,6 +180,10 @@ public class MainHomeFragment extends BaseFragment implements View.OnClickListen
                     {
                         SwitchImage item = goods.get(pos);
                         ToolUtils.setBannerGoto(item, mContext);
+                        HashMap<String,String> map = new HashMap<String,String>();
+                        map.put("type",item.type+"");
+                        map.put("title",item.title);
+                        MobclickAgent.onEvent(mContext, "home_server", map);
                     }
                 }
             });
@@ -310,6 +319,11 @@ public class MainHomeFragment extends BaseFragment implements View.OnClickListen
             @Override
             public void onItemClick(AdapterView<?> parent, View view, final int position, long id)
             {
+                HashMap<String,String> map = new HashMap<String,String>();
+                map.put("type",articles.get(position).getId()+"");
+                map.put("title",articles.get(position).getTitle());
+                MobclickAgent.onEvent(mContext, "home_article", map);
+
                 HomeArticleGoodsDetailsFragment homeArticleGoodsDetailsFragment = HomeArticleGoodsDetailsFragment.newInstance("", "" + articles.get(position).getId(),1);
                 ((BaseActivity) mContext).navigationToFragment(homeArticleGoodsDetailsFragment);
                 homeArticleGoodsDetailsFragment.setOnCommentListener(new HomeArticleGoodsDetailsFragment.OnCommentListener()
@@ -324,6 +338,7 @@ public class MainHomeFragment extends BaseFragment implements View.OnClickListen
                         }
                     }
                 });
+
             }
         });
 

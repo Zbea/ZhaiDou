@@ -108,15 +108,6 @@ public class PullToRefreshScrollView extends PullToRefreshBase<ScrollView> {
 		}
 	}
 
-    /**
-     * 公共接口：ScrollView滚动监听
-     */
-    public interface OnScrollChangedListener {
-        void onScrollChanged( int x, int y, int oldx, int oldy);
-    }
-
-    private OnScrollChangedListener mOnScrollChangedListener;
-
     @Override
     protected void onScrollChanged(int x, int y, int oldx, int oldy) {
         super.onScrollChanged(x, y, oldx, oldy);
@@ -126,14 +117,16 @@ public class PullToRefreshScrollView extends PullToRefreshBase<ScrollView> {
         }
     }
 
+    public interface OnScrollChangedListener {
+        void onScrollChanged( int x, int y, int oldx, int oldy);
+    }
 
+    private OnScrollChangedListener mOnScrollChangedListener;
 
-    /**
-     * 暴露给外部的方法：设置滚动监听
-     * @param listener
-     */
     public void setOnScrollChangedListener(OnScrollChangedListener listener) {
         mOnScrollChangedListener = listener;
     }
+
+
 
 }

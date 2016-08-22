@@ -9,9 +9,11 @@ import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -57,9 +59,10 @@ public class CommentListFragment extends BaseFragment
     private String mIndex;
 
     private Dialog mDialog;
-    private View mView;
+    private View mView,footView;
     private TextView commentNumTv,nullCommentTv;
     private PullToRefreshListView listView;
+    private ListView mlistView;
     private FrameLayout frameLayout;
     private  LinearLayout commentLine;
 
@@ -86,15 +89,38 @@ public class CommentListFragment extends BaseFragment
                     commentNumTv.setText("("+pageCount+")");
                     commentNumTv.setVisibility(pageCount>0?View.VISIBLE:View.GONE);
                     nullCommentTv.setVisibility(pageCount>0?View.GONE:View.VISIBLE);
-                    commentAdapter.notifyDataSetChanged();
-                    listView.onRefreshComplete();
-                    if (comments.size()< pageCount)
+
+                    if (commentAdapter==null)
                     {
-                        listView.setMode(PullToRefreshBase.Mode.BOTH);
-                    } else
-                    {
-                        listView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
+                        commentAdapter=new CommentAdapter(mContext,comments);
+                        mlistView.addFooterView(footView);
+                        mlistView.setAdapter(commentAdapter);
+                        commentAdapter.setOnInViewClickListener(R.id.ll_click,new BaseListAdapter.onInternalClickListener()
+                        {
+                            @Override
+                            public void OnClickListener(View parentV, View v, Integer position, Object values)
+                            {
+                                sendComment(position,1);
+                            }
+                        });
+                        commentAdapter.setOnInViewClickListener(R.id.commentFormerLine,new BaseListAdapter.onInternalClickListener()
+                        {
+                            @Override
+                            public void OnClickListener(View parentV, View v, Integer position, Object values)
+                            {
+                                sendComment(position,2);
+                            }
+                        });
                     }
+                    else
+                    {
+                        commentAdapter.notifyDataSetChanged();
+                    }
+                    if (comments.size()==0|comments.size()>=pageCount)
+                    {
+                        mlistView.removeFooterView(footView);
+                    }
+
                     if (mDialog != null)
                         mDialog.dismiss();
                     break;
@@ -133,7 +159,7 @@ public class CommentListFragment extends BaseFragment
                     if (checkLogin())
                     {
                         frameLayout.setVisibility(View.VISIBLE);
-                        CommentSendFragment commentSendFragment = CommentSendFragment.newInstance(mPage, mIndex,null);
+                        CommentSendFragment commentSendFragment = CommentSendFragment.newInstance(mPage, mIndex,null,0);
                         commentSendFragment.setOnCommentListener(new CommentSendFragment.OnCommentListener()
                         {
                             @Override
@@ -213,22 +239,47 @@ public class CommentListFragment extends BaseFragment
      */
     private void initView()
     {
+        footView=View.inflate(mContext,R.layout.pull_to_refresh_header_vertical1,null);
         mDialogUtils = new DialogUtils(mContext);
         commentNumTv=(TextView)mView.findViewById(R.id.commentNumTv);
         nullCommentTv=(TextView)mView.findViewById(R.id.commentNullTv);
 
-        listView=(PullToRefreshListView)mView.findViewById(R.id.lv_special_list);
-        listView.setOnRefreshListener(onRefreshListener);
-        commentAdapter=new CommentAdapter(mContext,comments);
-        listView.setAdapter(commentAdapter);
-        commentAdapter.setOnInViewClickListener(R.id.ll_click,new BaseListAdapter.onInternalClickListener()
+        mlistView=(ListView)mView.findViewById(R.id.lv_special_list1);
+        mlistView.setOnScrollListener(new AbsListView.OnScrollListener()
         {
+            private int lastItemIndex;//当前ListView中最后一个Item的索引
+            //当ListView不在滚动，并且ListView的最后一项的索引等于adapter的项数减一时则自动加载（因为索引是从0开始的）
             @Override
-            public void OnClickListener(View parentV, View v, Integer position, Object values)
-            {
-                sendComment(position);
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+                if (scrollState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE
+                        && lastItemIndex == commentAdapter.getCount() - 1) {
+                    if (comments.size()<pageCount)
+                    {
+                        page++;
+                        FetchData();
+                    }
+                    else
+                    {
+                        mlistView.removeFooterView(footView);
+                    }
+
+                }
+            }
+            //这三个int类型的参数可以自行Log打印一下就知道是什么意思了
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem,
+                                 int visibleItemCount, int totalItemCount) {
+                //ListView 的FooterView也会算到visibleItemCount中去，所以要再减去一
+                lastItemIndex = firstVisibleItem + visibleItemCount - 1 -1;
             }
         });
+
+//        listView=(PullToRefreshListView)mView.findViewById(R.id.lv_special_list);
+//        listView.setOnRefreshListener(onRefreshListener);
+//        commentAdapter=new CommentAdapter(mContext,comments);
+//        listView.setAdapter(commentAdapter);
+
+
         commentLine=(LinearLayout)mView.findViewById(R.id.commentEditLine);
         commentLine.setOnClickListener(onClickListener);
 
@@ -244,14 +295,25 @@ public class CommentListFragment extends BaseFragment
         }
     }
 
-    private void sendComment(final int position)
+    /**
+     * 发送评论
+     * @param position
+     * @param flags //回复1当前人，2原来的人
+     */
+    private void sendComment(final int position,int flags)
     {
         final Comment comment=comments.get(position);
         if (checkLogin())
         {
             int userId = (Integer) SharedPreferencesUtil.getData(mContext, "userId", -1);
-            if (comment.userId==userId)
+            int commendUserId=flags==1?comment.userId:comment.userIdFormer;
+            if (commendUserId==userId)//过滤掉自己回复自己的问题
             {
+                if (flags==2)
+                {
+                    ToolUtils.setToast(mContext,"抱歉,不能回复自己的评论信息");
+                    return;
+                }
                 mDialogUtils.showListDialog(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
@@ -279,7 +341,7 @@ public class CommentListFragment extends BaseFragment
             else
             {
                 frameLayout.setVisibility(View.VISIBLE);
-                CommentSendFragment commentSendFragment = CommentSendFragment.newInstance(mPage, mIndex, comment);
+                CommentSendFragment commentSendFragment = CommentSendFragment.newInstance(mPage, mIndex, comment,flags);
                 commentSendFragment.setOnCommentListener(new CommentSendFragment.OnCommentListener()
                 {
                     @Override
@@ -298,9 +360,9 @@ public class CommentListFragment extends BaseFragment
             }
         } else
         {
-            Intent intent = new Intent(getActivity(), LoginActivity.class);
+            Intent intent = new Intent(mContext, LoginActivity.class);
             intent.setFlags(1);
-            getActivity().startActivity(intent);
+            mContext.startActivity(intent);
         }
     }
 
@@ -315,7 +377,7 @@ public class CommentListFragment extends BaseFragment
                     @Override
                     public void onResponse(JSONObject response)
                     {
-                        listView.onRefreshComplete();
+//                        mlistView.onRefreshComplete();
                         if (response == null)
                         {
                             if (mDialog != null)
@@ -359,6 +421,7 @@ public class CommentListFragment extends BaseFragment
                                         String articleTitle=jsonComment.optString("articleTitle");
                                         String commentType=jsonComment.optString("commentType");
                                         String commentStatus=jsonComment.optString("status");
+                                        int isDesigner = jsonComment.optInt("isDesigner");
                                         String commentCreateTime= "";
                                         try
                                         {
@@ -379,6 +442,7 @@ public class CommentListFragment extends BaseFragment
                                         comment.userName=commentUserName;
                                         comment.userImage=commentUserImg;
                                         comment.userId=commentUserId;
+                                        comment.isDesigner=isDesigner;
                                     }
 
                                     JSONObject jsonReComment=obj.optJSONObject("reComment");
@@ -403,6 +467,7 @@ public class CommentListFragment extends BaseFragment
                                         String reCommentArticleTitle=jsonReComment.optString("articleTitle");
                                         String reCommentType=jsonReComment.optString("commentType");
                                         String reCommentStatus=jsonReComment.optString("status");
+                                        int reIsDesigner = jsonReComment.optInt("isDesigner");
                                         String reCommentCreateTime= "";
                                         try
                                         {
@@ -420,6 +485,7 @@ public class CommentListFragment extends BaseFragment
                                         comment.userNameFormer =reCommentUserName;
                                         comment.userImageFormer =reCommentUserImg;
                                         comment.userIdFormer =reCommentUserId;
+                                        comment.isDesignerFormer=reIsDesigner;
                                     }
                                     comments.add(comment);
                                 }
@@ -436,7 +502,7 @@ public class CommentListFragment extends BaseFragment
             public void onErrorResponse(VolleyError volleyError)
             {
                 mDialog.dismiss();
-                listView.onRefreshComplete();
+//                listView.onRefreshComplete();
                 if (page >1)
                 {
                     page--;
@@ -456,7 +522,7 @@ public class CommentListFragment extends BaseFragment
 
     public interface OnCommentListener
     {
-        void GetComments(List<Comment> comments1,int num);
+        void GetComments(List<Comment> comments1, int num);
     }
 
 

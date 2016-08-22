@@ -12,7 +12,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -85,7 +84,6 @@ public class ProfileAddrFragment extends BaseFragment implements View.OnClickLis
     private TextView et_location;
     private DialogUtils mDialogUtils;
 
-    private FrameLayout mContainer;
     private final int LOAD_ADDRESS_COMPLITED = 0;
     private final int UPDATE_USER_LOCATION = 1;
 
@@ -94,7 +92,6 @@ public class ProfileAddrFragment extends BaseFragment implements View.OnClickLis
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case LOAD_ADDRESS_COMPLITED:
-                    mContainer.setVisibility(View.GONE);
                     break;
                 case UPDATE_USER_LOCATION:
                     String loc = (String) msg.obj;
@@ -142,7 +139,8 @@ public class ProfileAddrFragment extends BaseFragment implements View.OnClickLis
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+                             Bundle savedInstanceState)
+    {
         View view = inflater.inflate(R.layout.fragment_profile_addr, container, false);
         mContext = getActivity();
         ll_manage_address = (LinearLayout) view.findViewById(R.id.ll_manage_address);
@@ -157,29 +155,32 @@ public class ProfileAddrFragment extends BaseFragment implements View.OnClickLis
         tv_save = (TextView) view.findViewById(R.id.tv_save);
         tv_edit = (LinearLayout) view.findViewById(R.id.tv_edit);
         et_location = (TextView) view.findViewById(R.id.tv_addr_loc);
-        mContainer = (FrameLayout) view.findViewById(R.id.fl_container);
         tv_save.setOnClickListener(this);
         tv_edit.setOnClickListener(this);
         view.findViewById(R.id.ll_address).setOnClickListener(this);
         tv_delete.setOnClickListener(this);
         tv_delete.setVisibility(View.GONE);
-        if (mNickName.length() > 0) {
+        if (mNickName.length() > 0)
+        {
             tv_save.setVisibility(View.GONE);
         }
-        if (TextUtils.isEmpty(mAddress)) {
+        if (TextUtils.isEmpty(mAddress))
+        {
             ll_edit_addr.setVisibility(View.VISIBLE);
             ll_manage_address.setVisibility(View.GONE);
-        } else {
+        } else
+        {
             ll_edit_addr.setVisibility(View.GONE);
             ll_manage_address.setVisibility(View.VISIBLE);
             tv_addr_username.setText(mNickName);
             tv_addr_mobile.setText(mMobile);
             String[] split = mLocation.split("-");
-            String address="";
-            for (String string:split) {
-                address+=string;
+            String address = "";
+            for (String string : split)
+            {
+                address += string;
             }
-            tv_addr.setText(address+mAddress);
+            tv_addr.setText(address + mAddress);
             et_location.setText(mLocation);
 
         }
@@ -187,8 +188,8 @@ public class ProfileAddrFragment extends BaseFragment implements View.OnClickLis
 
         mSharedPreferences = getActivity().getSharedPreferences("zhaidou", Context.MODE_PRIVATE);
         token = mSharedPreferences.getString("token", null);
-        if (mContext instanceof MainActivity)
-        provinceList=((MainActivity)mContext).getAddressCity();
+//        if (mContext instanceof MainActivity)
+        provinceList=MainActivity.getAddressCity();
         if (provinceList.size() ==0 ) {
             ToolUtils.setLog("重新加载地址");
             FetchCityData();
@@ -317,9 +318,8 @@ public class ProfileAddrFragment extends BaseFragment implements View.OnClickLis
                             province.setCityList(cityList);
                             provinceList.add(province);
                         }
-                        mContainer.setVisibility(TextUtils.isEmpty(mAddress)?View.VISIBLE:View.GONE);
                         if (mContext instanceof MainActivity)
-                        ((MainActivity)mContext).setAddressCity(provinceList);
+                        MainActivity.setAddressCity(provinceList);
                     }
                 }
             }

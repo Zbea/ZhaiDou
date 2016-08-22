@@ -12,6 +12,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.webkit.WebSettings;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -33,6 +35,7 @@ import com.zhaidou.adapter.ArticleGoodsAdapter;
 import com.zhaidou.adapter.CommentAdapter;
 import com.zhaidou.base.BaseActivity;
 import com.zhaidou.base.BaseFragment;
+import com.zhaidou.base.BaseListAdapter;
 import com.zhaidou.dialog.CustomLoadingDialog;
 import com.zhaidou.model.CartGoodsItem;
 import com.zhaidou.model.Comment;
@@ -126,10 +129,9 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
                 subtotalTv.setText("￥" + ToolUtils.isIntPrice(totalPrice));
 
                 ll_videoPage.setVisibility(TextUtils.isEmpty(videoUrl)?View.GONE:View.VISIBLE);
-                String url;
                 if (!TextUtils.isEmpty(vid))
                 {
-                    url="http://player.youku.com/embed/"+vid+"?client_id=814e6ba73e9be572";
+                    String url="http://player.youku.com/embed/"+vid+"?client_id=814e6ba73e9be572";
                     wb_video.loadUrl(url);
                 }
                 else
@@ -137,7 +139,6 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
                     wb_video.setVisibility(View.GONE);
                     iv_videoImage.setVisibility(View.VISIBLE);
                 }
-
                 ToolUtils.setImageCacheUrl(vImage, iv_videoImage, R.drawable.icon_loading_item);
                 ToolUtils.setImageCacheUrl(header, headerImageIv, R.drawable.icon_loading_item);
                 ToolUtils.setImageCacheUrl(imageUrl, imageIv, R.drawable.icon_loading_item);
@@ -209,18 +210,23 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
                     break;
                 case R.id.share_iv:
                     share();
+                    MobclickAgent.onEvent(mContext,"article_top_share");
                     break;
                 case R.id.goods_iv:
                     ((BaseActivity) mContext).navigationToFragment(goodsArticleListFragment);
+                    MobclickAgent.onEvent(mContext,"article_top_goods");
                     break;
                 case R.id.comment_iv:
                     ((BaseActivity) mContext).navigationToFragment(commentListFragment);
+                    MobclickAgent.onEvent(mContext,"article_top_comment");
                     break;
                 case R.id.detailsGoodsAllTv:
                     ((BaseActivity) mContext).navigationToFragment(goodsArticleListFragment);
+                    MobclickAgent.onEvent(mContext,"article_all_goods");
                     break;
                 case R.id.detailsCommentAllTv:
                     ((BaseActivity) mContext).navigationToFragment(commentListFragment);
+                    MobclickAgent.onEvent(mContext,"article_all_comment");
                     break;
                 case R.id.rl_video:
                     Intent video = new Intent();
@@ -244,7 +250,7 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
                     if (checkLogin())
                     {
                         frameLayout.setVisibility(View.VISIBLE);
-                        CommentSendFragment commentSendFragment = CommentSendFragment.newInstance(title, mString, null);
+                        CommentSendFragment commentSendFragment = CommentSendFragment.newInstance(title, mString, null,0);
                         commentSendFragment.setOnCommentListener(new CommentSendFragment.OnCommentListener()
                         {
                             @Override
@@ -383,19 +389,30 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
         rl_video.setLayoutParams(layoutParams);
         ll_videoPage = (LinearLayout) view.findViewById(R.id.ll_videoPage);
         wb_video=(CustomProgressWebview) view.findViewById(R.id.wb_video);
+        wb_video.setWebViewClient(new WebViewClient()
+        {
+            @Override
+            public void onPageFinished(WebView view, String url)
+            {
+                super.onPageFinished(view, url);
+                wb_video.setVisibility(View.VISIBLE);
+            }
+        });
         WebSettings webSettings = wb_video.getSettings();
         webSettings.setJavaScriptEnabled(true);
         webSettings.setPluginState(WebSettings.PluginState.ON);
         webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
         webSettings.setAllowFileAccess(true);
         webSettings.setDomStorageEnabled(true);
-        webSettings.setUseWideViewPort(true);
         webSettings.setLoadWithOverviewMode(true);
         webSettings.setCacheMode(WebSettings.LOAD_DEFAULT);
+        webSettings.setSupportZoom(true);
         // 开启 DOM storage API 功能
         webSettings.setDomStorageEnabled(true);
         //开启 database storage API 功能
         webSettings.setDatabaseEnabled(true);
+        //扩大比例的缩放
+        webSettings.setUseWideViewPort(true);
 
         commentNumTv = (TextView) view.findViewById(R.id.detailsCommentNumTv);
         totalLine = (LinearLayout) view.findViewById(R.id.detailsTotalLine);
@@ -462,67 +479,19 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
             @Override
             public void onItemClick(AdapterView<?> parent, View view, final int position, long id)
             {
-                final Comment comment=comments.get(position);
-                if (checkLogin())
-                {
-                    int userId = (Integer) SharedPreferencesUtil.getData(mContext, "userId", -1);
-                    if (comment.userId==userId)
-                    {
-                        mDialogUtils.showListDialog(new AdapterView.OnItemClickListener() {
-                            @Override
-                            public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
-                                mDialog=CustomLoadingDialog.setLoadingDialog(mContext,"");
-                                Api.deleteComment(comment.id, new Api.SuccessListener()
-                                {
-                                    @Override
-                                    public void onSuccess(Object object)
-                                    {
-                                        if (object != null)
-                                        {
-                                            mDialog.dismiss();
-                                            ToolUtils.setLog(object.toString());
-                                            comments.remove(position);
-                                            commentAdapter.upDate(comments);
-                                            commentCount--;
-                                            commentNumTv.setText("(" + commentCount + ")");
-                                            commentNumTv.setVisibility(commentCount > 0 ? View.VISIBLE : View.GONE);
-                                            ShowToast("删除成功");
-                                        }
-                                    }
-                                }, null);
-                            }
-                        });
-                    }
-                    else
-                    {
-
-                        CommentSendFragment commentSendFragment = CommentSendFragment.newInstance(title, mString, comments.get(position));
-                        commentSendFragment.setOnCommentListener(new CommentSendFragment.OnCommentListener()
-                        {
-                            @Override
-                            public void onCommentResult(Comment comment)
-                            {
-                                if (comment != null)
-                                {
-                                    commentCount++;
-                                    commentNumTv.setText("(" + commentCount + ")");
-                                    comments.add(0, comment);
-                                    commentAdapter.upDate(comments);
-                                    nullComment.setVisibility(comments.size() > 0 ? View.GONE : View.VISIBLE);
-                                    commentAllLine.setVisibility(comments.size() > 0 ? View.VISIBLE : View.GONE);
-                                }
-                            }
-                        });
-                        getFragmentManager().beginTransaction().add(R.id.frameLayout, commentSendFragment).addToBackStack(null).commitAllowingStateLoss();
-                    }
-                } else
-                {
-                    Intent intent = new Intent(getActivity(), LoginActivity.class);
-                    intent.setFlags(1);
-                    getActivity().startActivity(intent);
-                }
+                sendComment(position,1);
             }
         });
+
+        commentAdapter.setOnInViewClickListener(R.id.commentFormerLine,new BaseListAdapter.onInternalClickListener()
+        {
+            @Override
+            public void OnClickListener(View parentV, View v, Integer position, Object values)
+            {
+                sendComment(position,2);
+            }
+        });
+
 
         commentNumTv = (TextView) view.findViewById(R.id.detailsCommentNumTv);
 
@@ -580,6 +549,81 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
         } else
         {
             Toast.makeText(mContext, "抱歉,网络链接失败", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
+    /**
+     * 发送评论
+     * @param position
+     * @param flags //回复1当前人，2原来的人
+     */
+    private void sendComment(final int position,int flags)
+    {
+        final Comment comment=comments.get(position);
+        if (checkLogin())
+        {
+            int userId = (Integer) SharedPreferencesUtil.getData(mContext, "userId", -1);
+            int commendUserId=flags==1?comment.userId:comment.userIdFormer;
+            if (commendUserId==userId)//过滤掉自己回复自己的问题
+            {
+                if (flags==2)
+                {
+                    ToolUtils.setToast(mContext,"抱歉,不能回复自己的评论信息");
+                    return;
+                }
+                mDialogUtils.showListDialog(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
+                        mDialog=CustomLoadingDialog.setLoadingDialog(mContext,"");
+                        Api.deleteComment(comment.id, new Api.SuccessListener()
+                        {
+                            @Override
+                            public void onSuccess(Object object)
+                            {
+                                if (object != null)
+                                {
+                                    mDialog.dismiss();
+                                    ToolUtils.setLog(object.toString());
+                                    comments.remove(position);
+                                    commentAdapter.upDate(comments);
+                                    commentCount--;
+                                    commentNumTv.setText("(" + commentCount + ")");
+                                    commentNumTv.setVisibility(commentCount > 0 ? View.VISIBLE : View.GONE);
+                                    ShowToast("删除成功");
+                                }
+                            }
+                        }, null);
+                    }
+                });
+            }
+            else
+            {
+
+                CommentSendFragment commentSendFragment = CommentSendFragment.newInstance(title, mString, comments.get(position),flags);
+                commentSendFragment.setOnCommentListener(new CommentSendFragment.OnCommentListener()
+                {
+                    @Override
+                    public void onCommentResult(Comment comment)
+                    {
+                        if (comment != null)
+                        {
+                            commentCount++;
+                            commentNumTv.setText("(" + commentCount + ")");
+                            comments.add(0, comment);
+                            commentAdapter.upDate(comments);
+                            nullComment.setVisibility(comments.size() > 0 ? View.GONE : View.VISIBLE);
+                            commentAllLine.setVisibility(comments.size() > 0 ? View.VISIBLE : View.GONE);
+                        }
+                    }
+                });
+                getFragmentManager().beginTransaction().add(R.id.frameLayout, commentSendFragment).addToBackStack(null).commitAllowingStateLoss();
+            }
+        } else
+        {
+            Intent intent = new Intent(getActivity(), LoginActivity.class);
+            intent.setFlags(1);
+            getActivity().startActivity(intent);
         }
     }
 
@@ -809,6 +853,7 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
                                         String commentType = jsonComment.optString("commentType");
                                         String commentId = jsonComment.optString("commentId");
                                         String commentStatus = jsonComment.optString("status");
+                                        int isDesigner = jsonComment.optInt("isDesigner");
                                         String commentCreateTime = "";
                                         try
                                         {
@@ -829,6 +874,7 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
                                         comment.userName=commentUserName;
                                         comment.userImage=commentUserImg;
                                         comment.userId=commentUserId;
+                                        comment.isDesigner=isDesigner;
                                     }
 
                                     JSONObject jsonReComment = obj.optJSONObject("reComment");
@@ -853,6 +899,7 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
                                         String reCommentArticleTitle = jsonReComment.optString("articleTitle");
                                         String reCommentType = jsonReComment.optString("commentType");
                                         String reCommentStatus = jsonReComment.optString("status");
+                                        int reIsDesigner = jsonReComment.optInt("isDesigner");
                                         String reCommentCreateTime = "";
                                         try
                                         {
@@ -871,6 +918,7 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
                                         comment.userNameFormer =reCommentUserName;
                                         comment.userImageFormer =reCommentUserImg;
                                         comment.userIdFormer =reCommentUserId;
+                                        comment.isDesignerFormer=reIsDesigner;
                                     }
                                     comments.add(comment);
                                 }
@@ -914,6 +962,8 @@ public class HomeArticleGoodsDetailsFragment extends BaseFragment
     public void onResume()
     {
         super.onResume();
+        if (barLine!=null)
+            setAlphaAnimation(barLine, 1, 0);
         MobclickAgent.onPageStart("案例详情");
         try
         {

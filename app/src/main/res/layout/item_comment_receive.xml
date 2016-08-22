@@ -27,15 +27,31 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <com.zhaidou.view.TypeFaceTextView
-                android:id="@+id/username"
+            <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_gravity="left"
                 android:layout_weight="1"
-                android:text="Scoield"
-                android:textColor="#333333"
-                android:textSize="14sp" />
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <com.zhaidou.view.TypeFaceTextView
+                    android:id="@+id/username"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="名称"
+                    android:textSize="13sp"
+                    android:textColor="@color/text_normal_color"
+                    ></com.zhaidou.view.TypeFaceTextView>
+
+                <ImageView
+                    android:id="@+id/commentDesignerIv"
+                    android:layout_width="55dp"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="10dp"
+                    android:src="@drawable/icon_comment_designer"
+                    android:layout_marginBottom="1dp"/>
+
+            </LinearLayout>
 
             <com.zhaidou.view.TypeFaceTextView
                 android:id="@+id/time"
@@ -56,14 +72,32 @@
             android:orientation="vertical"
             android:padding="5dp">
 
-            <com.zhaidou.view.TypeFaceTextView
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/targetName"
-                android:textColor="#333333"
-                android:paddingTop="5dp"
-                android:textSize="14sp"
-                android:paddingBottom="10dp"/>
+                android:paddingBottom="10dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <com.zhaidou.view.TypeFaceTextView
+                    android:id="@+id/targetName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="名称"
+                    android:textSize="13sp"
+                    android:textColor="@color/text_normal_color"
+                    ></com.zhaidou.view.TypeFaceTextView>
+
+                <ImageView
+                    android:id="@+id/commentDesignerFormalIv"
+                    android:layout_width="55dp"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="10dp"
+                    android:src="@drawable/icon_comment_designer"
+                    android:layout_marginBottom="1dp"/>
+
+            </LinearLayout>
+
             <com.zhaidou.view.ChildGridView
                 android:id="@+id/re_gridView"
                 android:layout_width="wrap_content"

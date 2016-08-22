@@ -49,6 +49,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.WeakHashMap;
 
@@ -150,6 +151,10 @@ public class MainGoodsFragment extends BaseFragment implements
                     SwitchImage item = banners.get(postion);
                     ToolUtils.setBannerGoto(item, mContext);
                     FetchClickStatisticalData(item.title,item.typeValue,item.type,postion);
+                    HashMap<String,String> map = new HashMap<String,String>();
+                    map.put("type",item.type+"");
+                    map.put("title",item.title);
+                    MobclickAgent.onEvent(mContext, "home_banner", map);
                 }
             });
             linearLayout.addView(customBannerView);

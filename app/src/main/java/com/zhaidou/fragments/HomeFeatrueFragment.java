@@ -54,7 +54,6 @@ import com.zhaidou.utils.NetworkUtils;
 import com.zhaidou.utils.SharedPreferencesUtil;
 import com.zhaidou.utils.ToolUtils;
 import com.zhaidou.view.CustomProgressWebview;
-import com.zhaidou.view.LargeImgView;
 import com.zhaidou.view.ListViewForScrollView;
 import com.zhaidou.view.TypeFaceTextView;
 
@@ -102,7 +101,7 @@ public class HomeFeatrueFragment extends BaseFragment implements CartCountManage
     private TextView titleTv;
     private CustomProgressWebview bannerLine;
     private CustomProgressWebview infoImage;
-    private ImageView myCartBtn, imageIv;
+    private ImageView myCartBtn, imageIv,bannerIv;
     private RelativeLayout contactQQ, cartView;
     private PullToRefreshScrollView mScrollView;
     private LinearLayout singleLine, doubleLine, articleLine;
@@ -148,7 +147,7 @@ public class HomeFeatrueFragment extends BaseFragment implements CartCountManage
                     contactQQ.setVisibility(View.GONE);
                     break;
                 case UPDATE_DOUBLE_LIST:
-                    bannerLine.loadUrl(mainPic);
+                    setAddImage(bannerIv, mainPic, false);
                     mScrollView.onRefreshComplete();
                     if (pageCount > pageSize * page)
                     {
@@ -239,7 +238,9 @@ public class HomeFeatrueFragment extends BaseFragment implements CartCountManage
                 case R.id.infoImage:
 
                     break;
-
+                case R.id.bannersView1:
+                    setMainUrl(mainUrl, mainPic);
+                    break;
                 case R.id.myCartBtn:
                     if (checkLogina())
                     {
@@ -304,6 +305,8 @@ public class HomeFeatrueFragment extends BaseFragment implements CartCountManage
             reloadNetBtn = (TextView) rootView.findViewById(R.id.netReload);
             reloadNetBtn.setOnClickListener(onClickListener);
 
+            bannerIv = (ImageView) rootView.findViewById(R.id.bannersView1);
+            bannerIv.setOnClickListener(onClickListener);
             bannerLine = (CustomProgressWebview) rootView.findViewById(R.id.bannersView);
             bannerLine.getSettings().setJavaScriptEnabled(true);
             //扩大比例的缩放
@@ -311,15 +314,6 @@ public class HomeFeatrueFragment extends BaseFragment implements CartCountManage
             //自适应屏幕
             bannerLine.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
             bannerLine.getSettings().setLoadWithOverviewMode(true);
-            bannerLine.setOnTouchListener(new View.OnTouchListener()
-            {
-                @Override
-                public boolean onTouch(View v, MotionEvent event)
-                {
-                    setMainUrl(mainUrl, mainPic);
-                    return false;
-                }
-            });
 
             mScrollView = (PullToRefreshScrollView) rootView.findViewById(R.id.scrollView);
             mScrollView.setOnRefreshListener(onRefreshListener);
@@ -517,9 +511,9 @@ public class HomeFeatrueFragment extends BaseFragment implements CartCountManage
             @Override
             public void onLoadingComplete(String s, View view, Bitmap bitmap)
             {
+                ImageView imageView1 = (ImageView) view;
                 if (flags)
                 {
-                    ImageView imageView1 = (ImageView) view;
                     imageView1.setScaleType(ImageView.ScaleType.FIT_XY);
                     imageView1.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, bitmap.getHeight() * screenWidth / bitmap.getWidth()));
                     imageView1.setImageBitmap(bitmap);
@@ -529,16 +523,18 @@ public class HomeFeatrueFragment extends BaseFragment implements CartCountManage
                     {
                         ToolUtils.setLog("bitmap.getHeight():" + bitmap.getHeight());
                         ToolUtils.setLog("bitmap.getWidth():" + bitmap.getWidth());
-
-                        LargeImgView imageView1 = (LargeImgView) view;
                         imageView1.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, bitmap.getHeight() * screenWidth / bitmap.getWidth()));
                         if (bitmap.getHeight() < 1000)
                         {
                             imageView1.setScaleType(ImageView.ScaleType.FIT_XY);
                             imageView1.setImageBitmap(bitmap);
+                            bannerLine.setVisibility(View.GONE);
+                            bannerIv.setVisibility(View.VISIBLE);
                         } else
                         {
-                            imageView1.setImageBitmapLarge(bitmap);
+                            bannerLine.loadUrl(mainPic);
+                            bannerLine.setVisibility(View.VISIBLE);
+                            bannerIv.setVisibility(View.GONE);
                         }
                     }
                 }

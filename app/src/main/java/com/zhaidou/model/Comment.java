@@ -48,6 +48,10 @@ public class Comment implements Serializable
      */
     public String comment;
     /**
+     * 是否是设计师
+     */
+    public int isDesigner;
+    /**
      * 评论图片
      */
     public List<String> images=new ArrayList<String>();
@@ -82,6 +86,10 @@ public class Comment implements Serializable
      * 回复的时间
      */
     public String timeFormer;
+    /**
+     * 回复的是否是设计师
+     */
+    public int isDesignerFormer;
     /**
      * 回复的评论信息
      */

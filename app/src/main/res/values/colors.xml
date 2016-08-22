@@ -4,7 +4,7 @@
 
     <color name="white">#FFFFFF</color>
     <color name="tab_text_selected">#336699</color>
-    <color name="black">#F1F1F1</color>
+    <color name="black">#000000</color>
     <color name="page_bg">#F6F6F6</color>
     <color name="text_main_color">#333333</color>
     <color name="text_gary_color">#999999</color>

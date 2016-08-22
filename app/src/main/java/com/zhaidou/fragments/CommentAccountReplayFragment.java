@@ -303,6 +303,7 @@ public class CommentAccountReplayFragment extends BaseFragment implements PullTo
                 convertView = mInflater.inflate(R.layout.item_comment_receive, null);
             ImageView mAvatar = ViewHolder.get(convertView, R.id.avatar);
             TextView mUserName = ViewHolder.get(convertView, R.id.username);
+            ImageView designerIv = ViewHolder.get(convertView, R.id.commentDesignerIv);
             final TextView mTime = ViewHolder.get(convertView, R.id.time);
             GridView mGridView = ViewHolder.get(convertView, R.id.gridView);
             GridView mReGridView = ViewHolder.get(convertView, R.id.re_gridView);
@@ -310,12 +311,14 @@ public class CommentAccountReplayFragment extends BaseFragment implements PullTo
             TextView mSubject = ViewHolder.get(convertView, R.id.subject);
             TextView mReplay = ViewHolder.get(convertView, R.id.reply);
             TextView mTargetNAME=ViewHolder.get(convertView,R.id.targetName);
+            ImageView designerFormalIv = ViewHolder.get(convertView, R.id.commentDesignerFormalIv);
             LinearLayout mCommentLayout = ViewHolder.get(convertView, R.id.commentLayout);
             LinearLayout mReCommentLayout = ViewHolder.get(convertView, R.id.reCommentLayout);
             final Replay replay = getList().get(position);
             if (replay.comment != null) {
                 ToolUtils.setImageCacheUrl(replay.comment.commentUserImg!=null&&replay.comment.commentUserImg.contains("http") ? replay.comment.commentUserImg : "http://" + replay.comment.commentUserImg, mAvatar);
                 mUserName.setText(replay.comment.commentUserName);
+                designerIv.setVisibility(replay.comment.isDesigner==1?View.VISIBLE:View.GONE);
                 mSubject.setText(Html.fromHtml("来自<font color=#50c2bf>《" + replay.comment.articleTitle + "》</font>"));
                 List<String> list = !TextUtils.isEmpty(replay.comment.imgMd5) ?
                         Arrays.asList(replay.comment.imgMd5.split(",")) : new ArrayList<String>();
@@ -350,6 +353,7 @@ public class CommentAccountReplayFragment extends BaseFragment implements PullTo
                 mReGridView.setAdapter(adapter);
                 mReGridView.setVisibility(imageList.size() > 0 && !"F".equalsIgnoreCase(replay.reComment.status) ? View.VISIBLE : View.GONE);
                 mReplay.setText(replay.reComment.content);
+                designerFormalIv.setVisibility(replay.reComment.isDesigner==1?View.VISIBLE:View.GONE);
                 mReplay.setVisibility(!TextUtils.isEmpty(replay.reComment.content) ? View.VISIBLE : View.GONE);
                 adapter.setOnInViewClickListener(R.id.imageView, new onInternalClickListener() {
                     @Override

@@ -26,7 +26,6 @@ import java.util.Map;
  * Date: 2015-09-09
  * Time: 14:27
  * Description:自定义request,方便请求复杂数据结构的参数
- * FIXME
  */
 public class ZhaiDouRequest extends Request<JSONObject> {
 
@@ -67,7 +66,6 @@ public class ZhaiDouRequest extends Request<JSONObject> {
         this(context,method, url, listener, errorListener);
         this.params=params;
         mContext=context;
-        initHeader();
     }
 
     public ZhaiDouRequest(int method,String url,JSONObject jsonObject, Response.Listener<JSONObject> listener, Response.ErrorListener errorListener) {
@@ -79,15 +77,12 @@ public class ZhaiDouRequest extends Request<JSONObject> {
             String key=iterator.next().toString();
             params.put(key,jsonObject.optString(key));
         }
-
-        initHeader();
     }
 
 
     public ZhaiDouRequest(int method,String url,Map<String,String> params, Response.Listener<JSONObject> listener, Response.ErrorListener errorListener) {
         this(method, url, listener, errorListener);
         this.params=params;
-        initHeader();
     }
 
     @Override

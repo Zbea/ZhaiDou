@@ -59,6 +59,7 @@ public class CommentAdapter extends BaseListAdapter<Comment>
         if (convertView == null)
             convertView = mInflater.inflate(R.layout.item_comment_message, null);
         CircleImageView header = ViewHolder.get(convertView, R.id.commentHeader);
+        ImageView designerIv = ViewHolder.get(convertView, R.id.commentDesignerIv);
         TextView name = ViewHolder.get(convertView, R.id.commentNameTv);
         TextView time = ViewHolder.get(convertView, R.id.commentTimeTv);
         LinearLayout commentLine = ViewHolder.get(convertView, R.id.commentLine);
@@ -69,6 +70,7 @@ public class CommentAdapter extends BaseListAdapter<Comment>
         LinearLayout commentImageFormerLine = ViewHolder.get(convertView, R.id.commentImageFormerLine);
         TextView commentInfoFormer = ViewHolder.get(convertView, R.id.commentInfoFormerTv);
         TextView commentNameFormer = ViewHolder.get(convertView, R.id.commentNameFormerTv);
+        ImageView designerFormalIv = ViewHolder.get(convertView, R.id.commentDesignerFormalIv);
 
         LinearLayout commentImageReplyLine = ViewHolder.get(convertView, R.id.commentImageReplyLine);
         TextView commentReply= ViewHolder.get(convertView, R.id.commentInfoReplyTv);
@@ -77,6 +79,7 @@ public class CommentAdapter extends BaseListAdapter<Comment>
         commentImageLine.removeAllViews();
         commentImageFormerLine.removeAllViews();
         commentImageReplyLine.removeAllViews();
+        designerIv.setVisibility(comment.isDesigner==1?View.VISIBLE:View.GONE);
 
         if (TextUtils.isEmpty(comment.commentFormer)&comment.imagesFormer.size()==0)
         {
@@ -115,6 +118,7 @@ public class CommentAdapter extends BaseListAdapter<Comment>
             time.setText(comment.time);
             commentLine.setVisibility(View.GONE);
             commentReplyLine.setVisibility(View.VISIBLE);
+            designerFormalIv.setVisibility(comment.isDesignerFormer==1?View.VISIBLE:View.GONE);
 
             if (comment.imagesFormer ==null|comment.imagesFormer.size()==0)
             {

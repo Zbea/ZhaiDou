@@ -12,7 +12,6 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.umeng.analytics.MobclickAgent;
 import com.zhaidou.R;
@@ -98,8 +97,12 @@ public class WebViewActivity extends BaseActivity implements View.OnClickListene
                             @Override
                             public void onSuccess(Object object)
                             {
-                                if (object != null)
-                                    Toast.makeText(WebViewActivity.this, "领取优惠卷成功", Toast.LENGTH_SHORT).show();
+                                mDialogUtils.dismiss();
+                                if (object == null)
+                                {
+                                    return;
+                                }
+                                ToolUtils.setToast(WebViewActivity.this, "领取优惠卷成功");
                                 System.out.println("item = " + finalItem);
 //                                webView.loadUrl("javascript:GetCoupon('" + split[0]+"','"+split[1]+ "');");
                                 for (int i = 0; i < split.length; i++)
@@ -107,7 +110,6 @@ public class WebViewActivity extends BaseActivity implements View.OnClickListene
                                     webView.loadUrl("javascript:GetCoupon('" + split[i] + "')");
                                 }
                                 System.out.println("\"javascript:GetCoupon(\" + finalItem + \")\" = " + "javascript:GetCoupon(" + finalItem + ")");
-                                mDialogUtils.dismiss();
                             }
                         }, new Api.ErrorListener()
                         {
@@ -124,10 +126,13 @@ public class WebViewActivity extends BaseActivity implements View.OnClickListene
                             @Override
                             public void onSuccess(Object object)
                             {
-                                if (object != null)
-                                    Toast.makeText(WebViewActivity.this, "领取优惠卷成功", Toast.LENGTH_SHORT).show();
-                                webView.loadUrl("javascript:GetCoupon('" + substring + "')");
                                 mDialogUtils.dismiss();
+                                if (object == null)
+                                {
+                                    return;
+                                }
+                                ToolUtils.setToast(WebViewActivity.this, "领取优惠卷成功");
+                                webView.loadUrl("javascript:GetCoupon('" + substring + "')");
                             }
                         }, new Api.ErrorListener()
                         {
@@ -153,7 +158,6 @@ public class WebViewActivity extends BaseActivity implements View.OnClickListene
             @Override
             public void onPageFinished(WebView view, String url)
             {
-
                 webView.loadUrl("javascript:ReceiveUserInfo(" + userId + ", '" + token + "'," + getDeviceId() + ",'" + userName + "')");
                 super.onPageFinished(view, url);
             }
@@ -201,8 +205,7 @@ public class WebViewActivity extends BaseActivity implements View.OnClickListene
 
         Map<String, String> headers = new HashMap<String, String>();
         headers.put("ZhaidouVesion", getResources().getString(R.string.app_versionName));
-        if (url.contains("receive_coupon"))
-            url += "&source=android";
+        url += "?&source=android";
         ToolUtils.setLog(url);
         webView.loadUrl(url, headers);
     }

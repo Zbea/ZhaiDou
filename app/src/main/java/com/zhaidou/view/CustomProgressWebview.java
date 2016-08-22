@@ -1,13 +1,10 @@
 package com.zhaidou.view;
 
 import android.content.Context;
-import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.view.ViewGroup;
 import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
-import com.zhaidou.ZDApplication;
 
 /**
  * Created by roy on 15/7/22.
@@ -26,7 +23,6 @@ public class CustomProgressWebview extends WebView
 		addView(progressBar);
 		setWebChromeClient(new WebChromeClient());
 
-//        initTypeFace(context);
 
 	}
 
@@ -48,21 +44,4 @@ public class CustomProgressWebview extends WebView
 		}
 	}
 
-    public class CustomWebViewClient extends WebViewClient
-    {
-        @Override
-        public void onPageFinished(WebView view, String url)
-        {
-            progressBar.setVisibility(GONE);
-            super.onPageFinished(view, url);
-        }
-    };
-
-    public void initTypeFace(Context context){
-        ZDApplication application =(ZDApplication)context.getApplicationContext();
-        Typeface mTypeFace = application.getTypeFace();
-        if (mTypeFace!=null)
-        {
-        }
-    }
 }

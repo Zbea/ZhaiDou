@@ -304,6 +304,7 @@ public class CommentAccountListFragment extends BaseFragment implements PullToRe
                 convertView = mInflater.inflate(R.layout.item_comment_receive, null);
             ImageView mAvatar = ViewHolder.get(convertView, R.id.avatar);
             TextView mUserName = ViewHolder.get(convertView, R.id.username);
+            ImageView designerIv = ViewHolder.get(convertView, R.id.commentDesignerIv);
             TextView mTime = ViewHolder.get(convertView, R.id.time);
             GridView mGridView = ViewHolder.get(convertView, R.id.gridView);
             GridView mReGridView = ViewHolder.get(convertView, R.id.re_gridView);
@@ -313,10 +314,12 @@ public class CommentAccountListFragment extends BaseFragment implements PullToRe
             LinearLayout mCommentLayout = ViewHolder.get(convertView, R.id.commentLayout);
             LinearLayout mReCommentLayout = ViewHolder.get(convertView, R.id.reCommentLayout);
             TextView mTargetName=ViewHolder.get(convertView,R.id.targetName);
+            ImageView designerFormalIv = ViewHolder.get(convertView, R.id.commentDesignerFormalIv);
             Entity replay = getList().get(position);
             if (replay.comment != null) {
                 ToolUtils.setImageCacheUrl((String) SharedPreferencesUtil.getData(mContext,"avatar",""), mAvatar);
                 mUserName.setText("我的评论");//replay.comment.commentUserName
+                designerIv.setVisibility(replay.comment.isDesigner==1?View.VISIBLE:View.GONE);
                 mSubject.setText(Html.fromHtml("来自<font color=#50c2bf>《" + replay.comment.articleTitle + "》</font>"));
                 List<String> list=!TextUtils.isEmpty(replay.comment.imgMd5) ?
                         Arrays.asList(replay.comment.imgMd5.split(",")) : new ArrayList<String>();
@@ -354,6 +357,7 @@ public class CommentAccountListFragment extends BaseFragment implements PullToRe
             }
             if (replay.reComment != null) {
                 mTargetName.setText(replay.reComment.commentUserName);
+                designerFormalIv.setVisibility(replay.reComment.isDesigner==1?View.VISIBLE:View.GONE);
                 List<String> reImageList=!TextUtils.isEmpty(replay.reComment.imgMd5) ?
                         Arrays.asList(replay.reComment.imgMd5.split(",")) : new ArrayList<String>();
                 final ImageAdapter adapter = new ImageAdapter(convertView.getContext(), reImageList);

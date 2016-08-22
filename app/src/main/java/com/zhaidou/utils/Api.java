@@ -1,7 +1,6 @@
 package com.zhaidou.utils;
 import android.content.Context;
 import android.text.TextUtils;
-import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
 import com.android.volley.Request;
@@ -344,7 +343,7 @@ public class Api {
                     errorListener.onError(volleyError);
             }
         });
-        ZDApplication.mRequestQueue.add(request);
+        ZDApplication.newRequestQueue().add(request);
     }
 
     //单个优惠劵领取接口
@@ -358,11 +357,12 @@ public class Api {
         ZhaiDouRequest request=new ZhaiDouRequest(Request.Method.POST,ZhaiDou.activateCoupons,params, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
+                ToolUtils.setLog(jsonObject.toString());
                 int status = jsonObject.optInt("status");
                 String message = jsonObject.optString("message");
                 if (status==200){
                     JSONObject data = jsonObject.optJSONObject("data");
-                    int code = jsonObject.optInt("code");
+                    int code = data.optInt("code");
                     if (code==0&&data!=null){
                         JSONObject object = data.optJSONObject("data");
                         if (object!=null) {
@@ -371,10 +371,12 @@ public class Api {
                         }
                     }else if (code==-1){
                         String msg = data.optString("msg");
-                        Toast.makeText(ZDApplication.getInstance(),msg,Toast.LENGTH_SHORT).show();
+                        ToolUtils.setToast(ZDApplication.getInstance(),msg);
+                            successListener.onSuccess(null);
                     }
                 }else {
-                    Toast.makeText(ZDApplication.getInstance(),message,Toast.LENGTH_SHORT).show();
+                    ToolUtils.setToast(ZDApplication.getInstance(),message);
+                        successListener.onSuccess(null);
                 }
             }
         },new Response.ErrorListener() {
@@ -384,7 +386,7 @@ public class Api {
                     errorListener.onError(volleyError);
             }
         });
-        ZDApplication.mRequestQueue.add(request);
+        ZDApplication.newRequestQueue().add(request);
     }
 
     //一键领取优惠劵
@@ -392,28 +394,31 @@ public class Api {
         Map<String,String> params=new HashMap<String, String>();
         String userId=SharedPreferencesUtil.getData(ZDApplication.getInstance(),"userId",0)+"";
         String nickName= (String) SharedPreferencesUtil.getData(ZDApplication.getInstance(),"nickName","");
-        params.put("userId",userId);
-        params.put("nickName",nickName);
         JSONArray jsonArray=new JSONArray();
         for (int i = 0; i < couponCodes.length; i++) {
             String couponCode=couponCodes[i];
             JSONObject jsonObject=new JSONObject();
-            try {
+            try
+            {
                 jsonObject.put("couponKey",couponCode);
-            } catch (JSONException e) {
+            } catch (JSONException e)
+            {
                 e.printStackTrace();
             }
             jsonArray.put(jsonObject);
-        }
-        params.put("couponCodes",jsonArray.toString());
+            }
+            params.put("userId",userId);
+            params.put("nickName",nickName);
+            params.put("couponCodes",jsonArray.toString());
         ZhaiDouRequest request=new ZhaiDouRequest(Request.Method.POST,ZhaiDou.activateAllCouponsByOneClick,params, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
+                ToolUtils.setLog(jsonObject.toString());
                 int status = jsonObject.optInt("status");
                 String message = jsonObject.optString("message");
                 if (status==200){
                     JSONObject data = jsonObject.optJSONObject("data");
-                    int code = jsonObject.optInt("code");
+                    int code = data.optInt("code");
                     if (code==0&&data!=null){
                         JSONObject object = data.optJSONObject("data");
                         if (object!=null) {
@@ -422,11 +427,12 @@ public class Api {
                         }
                     }else if (code==-1){
                         String msg = data.optString("msg");
-                        Toast.makeText(ZDApplication.getInstance(),msg,Toast.LENGTH_SHORT).show();
+                        ToolUtils.setToast(ZDApplication.getInstance(),msg);
+                        successListener.onSuccess(null);
                     }
                 }else {
-                    errorListener.onError(null);
-                    Toast.makeText(ZDApplication.getInstance(),message,Toast.LENGTH_SHORT).show();
+                    successListener.onSuccess(null);
+                    ToolUtils.setToast(ZDApplication.getInstance(),message);
                 }
             }
         },new Response.ErrorListener() {
@@ -436,7 +442,7 @@ public class Api {
                     errorListener.onError(volleyError);
             }
         });
-        ZDApplication.mRequestQueue.add(request);
+        ZDApplication.newRequestQueue().add(request);
     }
 
 

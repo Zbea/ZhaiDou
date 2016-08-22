@@ -53,7 +53,12 @@ public class ArticleGoodsAdapter extends BaseListAdapter<CartGoodsItem>
         {
             goodsTypeTv.setText("淘宝");
             goodsTypeTv.setTextColor(context.getResources().getColor(R.color.yellow));
-        } else if (goodsItem.storeId.equals("M"))
+        }
+        else if (goodsItem.storeId.equals("A"))
+        {
+            goodsTypeTv.setText("阿里巴巴");
+            goodsTypeTv.setTextColor(context.getResources().getColor(R.color.yellow));
+        }else if (goodsItem.storeId.equals("M"))
         {
             goodsTypeTv.setText("天猫");
             goodsTypeTv.setTextColor(context.getResources().getColor(R.color.red));
